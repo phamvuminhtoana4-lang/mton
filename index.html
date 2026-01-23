@@ -19,10 +19,6 @@ input,select,textarea{width:100%;padding:8px;margin:5px 0;border-radius:6px;bord
 button{padding:8px;border-radius:6px;border:none;background:#fde047;font-weight:bold;cursor:pointer}
 img{max-width:100%;border-radius:8px}
 .small{font-size:12px;color:#cbd5f5}
-.badge{padding:2px 6px;border-radius:4px;font-size:12px}
-.wait{background:#facc15;color:#000}
-.ok{background:#22c55e}
-.err{background:#ef4444}
 .adminDel{background:#ef4444;color:#fff;margin-left:5px}
 #aiBox{position:fixed;bottom:10px;right:10px;width:260px;background:#020617;border:1px solid #1e293b;border-radius:10px}
 #aiHead{padding:6px;background:#1e293b;cursor:pointer}
@@ -251,6 +247,7 @@ function renderAdmin(){
   adminBuy.innerHTML+=`
   <div class="card">${b.u} mua ${b.acc.name}
   <button onclick="duyetBuy(${i})">Duyệt</button>
+  <button onclick="huyBuy(${i})">Từ chối</button>
   </div>`;
  });
 }
@@ -282,6 +279,13 @@ function duyetBuy(i){
  renderAdmin();
 }
 
+function huyBuy(i){
+ if(!confirm("Từ chối giao dịch này?"))return;
+ buys[i].st="Từ chối";
+ localStorage.buys=JSON.stringify(buys);
+ renderAdmin();
+}
+
 function loadImg(e){
  let r=new FileReader();
  r.onload=()=>{img=r.result;preview.src=img};
@@ -309,4 +313,4 @@ function sendAI(){
 </script>
 
 </body>
-</html>
+ </html>
