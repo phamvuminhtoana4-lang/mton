@@ -33,8 +33,10 @@ button{padding:8px;border:none;border-radius:6px;background:#fde047;font-weight:
 <div id="side">
 <a onclick="openView('home')">🏠 Trang chính</a>
 <a onclick="openView('nap')">💳 Nạp tiền</a>
-<a onclick="openView('history')">📜 Lịch sử</a>
-<a id="adminLink" onclick="openView('admin')" style="display:none">👑 Admin</a>
+<a onclick="openView('shop')">🛒 Shop acc</a>
+<a onclick="openView('hisNap')">📜 Lịch sử nạp</a>
+<a onclick="openView('hisBuy')">🎮 Lịch sử mua acc</a>
+<a id="adminLink" onclick="openView('admin')" style="display:none">👑 Quản trị</a>
 <a onclick="logout()">🚪 Đăng xuất</a>
 </div>
 <div id="overlay" onclick="toggle()"></div>
@@ -45,12 +47,12 @@ button{padding:8px;border:none;border-radius:6px;background:#fde047;font-weight:
 <div id="home" class="view active">
 <div class="card">
 <h2>Chào mừng bạn đến với shop của Toàn</h2>
-<p class="small">Đăng ký / đăng nhập để sử dụng dịch vụ</p>
+<p class="small">Đăng ký hoặc đăng nhập để sử dụng dịch vụ</p>
 </div>
 
 <div class="card">
 <h3>Đăng ký</h3>
-<input id="ru" placeholder="Tài khoản">
+<input id="ru" placeholder="Tên tài khoản">
 <input id="rp" type="password" placeholder="Mật khẩu">
 <input id="rp2" type="password" placeholder="Nhập lại mật khẩu">
 <button onclick="register()">Đăng ký</button>
@@ -58,16 +60,9 @@ button{padding:8px;border:none;border-radius:6px;background:#fde047;font-weight:
 
 <div class="card">
 <h3>Đăng nhập</h3>
-<input id="lu" placeholder="Tài khoản">
+<input id="lu" placeholder="Tên tài khoản">
 <input id="lp" type="password" placeholder="Mật khẩu">
 <button onclick="login()">Đăng nhập</button>
-</div>
-
-<div class="card">
-<h3>Admin đăng nhập</h3>
-<input id="au" placeholder="Admin user">
-<input id="ap" type="password" placeholder="Admin pass">
-<button onclick="loginAdmin()">Đăng nhập admin</button>
 </div>
 </div>
 
@@ -95,92 +90,131 @@ button{padding:8px;border:none;border-radius:6px;background:#fde047;font-weight:
 </div>
 </div>
 
+<!-- SHOP -->
+<div id="shop" class="view">
+<div id="accList"></div>
+</div>
+
 <!-- HISTORY -->
-<div id="history" class="view">
-<div class="card">
-<h3>Lịch sử nạp</h3>
-<div id="his"></div>
-</div>
-</div>
+<div id="hisNap" class="view"><div class="card"><h3>Lịch sử nạp</h3><div id="hn"></div></div></div>
+<div id="hisBuy" class="view"><div class="card"><h3>Lịch sử mua acc</h3><div id="hb"></div></div></div>
 
 <!-- ADMIN -->
 <div id="admin" class="view">
 <div class="card">
-<h3>Danh sách nạp chờ duyệt</h3>
-<div id="adminList"></div>
+<h3>Giao dịch chờ duyệt</h3>
+<div id="adminPending"></div>
+</div>
+
+<div class="card">
+<h3>Thêm acc</h3>
+<input id="accName" placeholder="Tên acc">
+<input id="accUser" placeholder="TK acc">
+<input id="accPass" placeholder="MK acc">
+<input id="accPrice" placeholder="Giá">
+<button onclick="addAcc()">Thêm acc</button>
 </div>
 </div>
 
 </div>
 
 <script>
+const ADMIN_USER="admin",ADMIN_PASS="Pvmt207#";
 let users=JSON.parse(localStorage.users||"{}");
+let accs=JSON.parse(localStorage.accs||"[]");
 let pending=JSON.parse(localStorage.pending||"[]");
 let cur="",isAdmin=false;
 
 function toggle(){
- let s=document.getElementById("side"),o=document.getElementById("overlay");
- if(s.style.left=="0px"){s.style.left="-260px";o.style.display="none";}
- else{s.style.left="0px";o.style.display="block";}
+ side.style.left=side.style.left=="0px"?"-260px":"0px";
+ overlay.style.display=side.style.left=="0px"?"block":"none";
 }
 function openView(id){
  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
  document.getElementById(id).classList.add('active');toggle();
+ if(id=="shop")renderShop();
+ if(id=="admin")renderAdmin();
+ if(id=="hisNap")renderHistory();
+ if(id=="hisBuy")renderBuy();
 }
 function register(){
  if(rp.value!==rp2.value||!ru.value)return alert("Sai thông tin");
  if(users[ru.value])return alert("Tồn tại");
- users[ru.value]={pass:rp.value,balance:0,history:[]};
+ users[ru.value]={pass:rp.value,balance:0,nap:[],buy:[]};
  localStorage.users=JSON.stringify(users);
  alert("Đăng ký thành công");
 }
 function login(){
- if(!users[lu.value]||users[lu.value].pass!==lp.value)return alert("Sai");
- cur=lu.value;isAdmin=false;
- userInfo.innerText="👤 "+cur+" | 💰 "+users[cur].balance+"đ";
+ let u=lu.value,p=lp.value;
+ if(u===ADMIN_USER&&p===ADMIN_PASS){
+  isAdmin=true;cur="ADMIN";adminLink.style.display="block";
+  userInfo.innerText="👑 ADMIN";openView('admin');return;
+ }
+ if(!users[u]||users[u].pass!==p)return alert("Sai thông tin");
+ cur=u;userInfo.innerText=`👤 ${cur} | 💰 ${users[cur].balance}đ`;
  openView('nap');
 }
-function loginAdmin(){
- if(au.value==="admin"&&ap.value==="Pvmt207#"){
-  isAdmin=true;cur="ADMIN";
-  adminLink.style.display="block";
-  userInfo.innerText="👑 ADMIN";
-  openView('admin');renderAdmin();
- }else alert("Sai admin");
-}
 function logout(){location.reload();}
-
 function sendCard(){
- pending.push({user:cur,type:"Thẻ",val:cardVal.value,code:cardCode.value,seri:cardSeri.value});
+ pending.push({user:cur,type:"Thẻ",info:cardCode.value});
  localStorage.pending=JSON.stringify(pending);
- alert("Đã gửi thẻ, chờ admin duyệt");
+ alert("Đã gửi, chờ admin");
 }
 function sendBank(){
- pending.push({user:cur,type:"CK",note:ckNote.value});
+ pending.push({user:cur,type:"CK",info:ckNote.value});
  localStorage.pending=JSON.stringify(pending);
- alert("Đã gửi xác nhận CK");
+ alert("Đã gửi xác nhận");
 }
 function renderAdmin(){
- let html="";
+ adminPending.innerHTML="";
  pending.forEach((p,i)=>{
-  html+=`<div class="card">
-<b>${p.user}</b> - ${p.type}<br>
-${p.code||p.note||""}<br>
-<input id="m${i}" placeholder="Số tiền cộng">
-<button onclick="approve(${i})">Duyệt</button>
-</div>`;
+  adminPending.innerHTML+=`
+  <div class="card">
+  <b>${p.user}</b> - ${p.type}<br>${p.info}
+  <input id="add${i}" placeholder="Tiền cộng">
+  <button onclick="approve(${i})">Duyệt</button>
+  </div>`;
  });
- adminList.innerHTML=html||"Không có";
 }
 function approve(i){
- let add=Number(document.getElementById("m"+i).value);
- let u=pending[i].user;
- users[u].balance+=add;
- users[u].history.push("Nạp +"+add+"đ");
+ let add=Number(document.getElementById("add"+i).value);
+ users[pending[i].user].balance+=add;
+ users[pending[i].user].nap.push("+"+add);
  pending.splice(i,1);
  localStorage.users=JSON.stringify(users);
  localStorage.pending=JSON.stringify(pending);
  renderAdmin();
+}
+function addAcc(){
+ accs.push({name:accName.value,user:accUser.value,pass:accPass.value,price:Number(accPrice.value)});
+ localStorage.accs=JSON.stringify(accs);
+ alert("Đã thêm acc");
+}
+function renderShop(){
+ accList.innerHTML="";
+ accs.forEach((a,i)=>{
+  accList.innerHTML+=`
+  <div class="card">
+  <b>${a.name}</b><br>Giá: ${a.price}đ<br>
+  <button onclick="buy(${i})">Mua</button>
+  </div>`;
+ });
+}
+function buy(i){
+ let a=accs[i];
+ if(users[cur].balance<a.price)return alert("Không đủ tiền");
+ users[cur].balance-=a.price;
+ users[cur].buy.push(`${a.name} | TK:${a.user} | MK:${a.pass}`);
+ accs.splice(i,1);
+ localStorage.users=JSON.stringify(users);
+ localStorage.accs=JSON.stringify(accs);
+ alert("Mua thành công");
+}
+function renderHistory(){
+ hn.innerHTML=users[cur].nap.map(n=>"<p>"+n+"</p>").join("");
+}
+function renderBuy(){
+ hb.innerHTML=users[cur].buy.map(b=>"<p>"+b+"</p>").join("");
 }
 </script>
 
