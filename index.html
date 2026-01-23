@@ -301,6 +301,37 @@ function sendAI(){
  chat.scrollTop=9999;
 }
 </script>
+<script>
+function removeAcc(accId) {
+  if (!currentUser || currentUser.username !== "admin") {
+    alert("Bạn không có quyền");
+    return;
+  }
 
+  if (!confirm("Bạn chắc chắn muốn gỡ acc này?")) return;
+
+  let vipAccs = JSON.parse(localStorage.getItem("accVip")) || [];
+  let whiteAccs = JSON.parse(localStorage.getItem("accTrang")) || [];
+
+  let beforeVip = vipAccs.length;
+  vipAccs = vipAccs.filter(acc => acc.id !== accId);
+
+  let beforeWhite = whiteAccs.length;
+  whiteAccs = whiteAccs.filter(acc => acc.id !== accId);
+
+  if (vipAccs.length !== beforeVip) {
+    localStorage.setItem("accVip", JSON.stringify(vipAccs));
+  }
+
+  if (whiteAccs.length !== beforeWhite) {
+    localStorage.setItem("accTrang", JSON.stringify(whiteAccs));
+  }
+
+  alert("Đã gỡ acc khỏi shop");
+  renderAccVip();
+  renderAccTrang();
+  showAdminRemoveButtons();
+}
+</script>
 </body>
 </html>
