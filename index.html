@@ -23,6 +23,7 @@ img{max-width:100%;border-radius:8px}
 .wait{background:#facc15;color:#000}
 .ok{background:#22c55e}
 .err{background:#ef4444}
+.adminDel{background:#ef4444;color:#fff;margin-left:5px}
 #aiBox{position:fixed;bottom:10px;right:10px;width:260px;background:#020617;border:1px solid #1e293b;border-radius:10px}
 #aiHead{padding:6px;background:#1e293b;cursor:pointer}
 #aiBody{padding:6px}
@@ -54,7 +55,6 @@ img{max-width:100%;border-radius:8px}
 
 <div class="container">
 
-<!-- HOME -->
 <div id="home" class="view active">
 <div class="card">
 <h3>Đăng ký</h3>
@@ -72,7 +72,6 @@ img{max-width:100%;border-radius:8px}
 </div>
 </div>
 
-<!-- NẠP -->
 <div id="nap" class="view">
 <div class="card">
 <h3>Nạp thẻ cào</h3>
@@ -103,7 +102,6 @@ Nội dung CK: <b id="ckNoiDung"></b>
 <div id="hisNap" class="view"></div>
 <div id="hisBuy" class="view"></div>
 
-<!-- ADMIN -->
 <div id="admin" class="view">
 <div class="card">
 <h3>Duyệt nạp thẻ</h3>
@@ -134,7 +132,6 @@ Nội dung CK: <b id="ckNoiDung"></b>
 
 </div>
 
-<!-- AI -->
 <div id="aiBox">
 <div id="aiHead" onclick="toggleAI()">🤖 AI hỗ trợ</div>
 <div id="aiBody">
@@ -211,8 +208,17 @@ function renderShop(t){
    <b>${a.name}</b><br>${a.price}đ<br>
    <span class="small">${a.note}</span><br>
    <button onclick="buy(${i})">Mua</button>
+   ${cur==="ADMIN"?`<button class="adminDel" onclick="delAcc(${i})">❌ Xóa</button>`:""}
   </div>`;
  });
+}
+
+function delAcc(i){
+ if(!confirm("Xóa acc này?"))return;
+ accs.splice(i,1);
+ localStorage.accs=JSON.stringify(accs);
+ alert("Đã xóa acc");
+ renderShop("vip");renderShop("white");
 }
 
 function buy(i){
@@ -301,6 +307,6 @@ function sendAI(){
  chat.scrollTop=9999;
 }
 </script>
- 
+
 </body>
-  </html>
+</html>
