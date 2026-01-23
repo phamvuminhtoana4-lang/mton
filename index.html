@@ -2,337 +2,303 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>MTON Shop Acc Roblox</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shop Acc Toàn</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body {
-  margin:0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(#ffecec,#fff);
-}
-header {
-  background:#d60000;
-  color:#fff;
-  padding:10px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-button { cursor:pointer; }
-.container { padding:15px; }
-.hidden { display:none; }
-.acc {
-  border:1px solid #ccc;
-  padding:10px;
-  margin:10px 0;
-  border-radius:6px;
-  background:#fff;
-}
-.acc img {
-  max-width:100%;
-  border-radius:5px;
-}
-.menu {
-  position:fixed;
-  top:0;left:0;
-  width:220px;
-  height:100%;
-  background:#222;
-  color:#fff;
-  padding:10px;
-  transform:translateX(-100%);
-  transition:0.3s;
-}
-.menu a {
-  display:block;
-  color:#fff;
-  text-decoration:none;
-  padding:8px 0;
-}
-.menu.show { transform:translateX(0); }
-.ai-box {
-  position:fixed;
-  bottom:10px;
-  right:10px;
-  width:250px;
-  background:#fff;
-  border:1px solid #ccc;
-  border-radius:8px;
-}
-.ai-header {
-  background:#d60000;
-  color:#fff;
-  padding:5px;
-}
-.ai-body {
-  padding:5px;
-  height:120px;
-  overflow:auto;
-}
-.ai-input { width:100%; }
+body{margin:0;font-family:Arial;background:#020617;color:#fff}
+header{display:flex;align-items:center;padding:10px;border-bottom:1px solid #1e293b}
+#menuBtn{font-size:22px;cursor:pointer}
+#userBox{margin-left:auto;font-size:14px}
+#side{position:fixed;top:0;left:-260px;width:250px;height:100%;background:#020617;border-right:1px solid #1e293b;transition:.3s;padding-top:60px;z-index:9}
+#side a{display:block;padding:12px;border-bottom:1px solid #1e293b;cursor:pointer}
+.container{padding:15px}
+.view{display:none}
+.view.active{display:block}
+.card{border:1px solid #1e293b;border-radius:10px;padding:12px;margin-bottom:12px}
+input,select,textarea{width:100%;padding:8px;margin:5px 0;border-radius:6px;border:none}
+button{padding:8px;border-radius:6px;border:none;background:#fde047;font-weight:bold;cursor:pointer}
+img{max-width:100%;border-radius:8px}
+.small{font-size:12px;color:#cbd5f5}
+.badge{padding:2px 6px;border-radius:4px;font-size:12px}
+.wait{background:#facc15;color:#000}
+.ok{background:#22c55e}
+.err{background:#ef4444}
+#aiBox{position:fixed;bottom:10px;right:10px;width:260px;background:#020617;border:1px solid #1e293b;border-radius:10px}
+#aiHead{padding:6px;background:#1e293b;cursor:pointer}
+#aiBody{padding:6px}
+.chat{height:180px;overflow:auto;border:1px solid #1e293b;padding:5px;margin-bottom:5px}
+.ai{color:#22c55e}
+.user{color:#fde047}
 </style>
 </head>
 
 <body>
 
 <header>
-  <button onclick="toggleMenu()">☰</button>
-  <div>
-    <span id="userInfo"></span>
-    <span id="userMoney"></span>
-  </div>
+<span id="menuBtn" onclick="toggle()">☰</span>
+<b style="margin-left:10px">SHOP ACC TOÀN</b>
+<div id="userBox">Chưa đăng nhập</div>
 </header>
 
-<div class="menu" id="menu">
-  <a href="#" onclick="showPage('home')">Trang chính</a>
-  <a href="#" onclick="showPage('nap')">Nạp tiền</a>
-  <a href="#" onclick="showPage('vip')">Acc VIP</a>
-  <a href="#" onclick="showPage('white')">Acc Trắng TT</a>
-  <a href="#" onclick="showPage('historyNap')">Lịch sử nạp</a>
-  <a href="#" onclick="showPage('historyBuy')">Lịch sử mua</a>
-  <a href="#" id="adminMenu" class="hidden" onclick="showPage('admin')">ADMIN</a>
-  <a href="#" onclick="logout()">Đăng xuất</a>
+<div id="side">
+<a onclick="go('home')">Trang chính</a>
+<a onclick="go('nap')">Nạp tiền</a>
+<a onclick="go('vip')">Acc VIP</a>
+<a onclick="go('white')">Acc Trắng TT</a>
+<a onclick="go('hisNap')">Lịch sử nạp</a>
+<a onclick="go('hisBuy')">Lịch sử mua</a>
+<a onclick="window.open('https://www.facebook.com/share/1DVxeshD6L/','_blank')">Facebook Admin</a>
+<a id="adminMenu" style="display:none" onclick="go('admin')">ADMIN</a>
+<a onclick="logout()">Đăng xuất</a>
 </div>
 
 <div class="container">
 
-<div id="home">
-  <h2>Chào mừng bạn đến với shop của Toàn</h2>
-  <p>Shop acc Roblox uy tín – demo frontend.</p>
-  <p>📌 Facebook admin: 
-    <a href="https://www.facebook.com/share/1DVxeshD6L/" target="_blank">
-      Nhấn vào đây
-    </a>
-  </p>
+<!-- HOME -->
+<div id="home" class="view active">
+<div class="card">
+<h3>Đăng ký</h3>
+<input id="rUser" placeholder="Tên tài khoản">
+<input id="rPass" type="password" placeholder="Mật khẩu">
+<input id="rPass2" type="password" placeholder="Nhập lại mật khẩu">
+<button onclick="register()">Đăng ký</button>
 </div>
 
-<div id="login">
-  <h3>Đăng nhập</h3>
-  <input id="loginUser" placeholder="Tên tài khoản"><br><br>
-  <input id="loginPass" type="password" placeholder="Mật khẩu"><br><br>
-  <button onclick="login()">Đăng nhập</button>
-  <p><a href="#" onclick="showPage('register')">Đăng ký</a></p>
+<div class="card">
+<h3>Đăng nhập</h3>
+<input id="lUser" placeholder="Tên tài khoản">
+<input id="lPass" type="password" placeholder="Mật khẩu">
+<button onclick="login()">Đăng nhập</button>
+</div>
 </div>
 
-<div id="register" class="hidden">
-  <h3>Đăng ký</h3>
-  <input id="regUser" placeholder="Tên tài khoản"><br><br>
-  <input id="regPass" type="password" placeholder="Mật khẩu"><br><br>
-  <input id="regPass2" type="password" placeholder="Nhập lại mật khẩu"><br><br>
-  <button onclick="register()">Đăng ký</button>
+<!-- NẠP -->
+<div id="nap" class="view">
+<div class="card">
+<h3>Nạp thẻ cào</h3>
+<select id="menhgia">
+<option value="10000">10.000</option>
+<option value="20000">20.000</option>
+<option value="50000">50.000</option>
+<option value="100000">100.000</option>
+<option value="200000">200.000</option>
+<option value="500000">500.000</option>
+<option value="1000000">1.000.000</option>
+</select>
+<input id="seri" placeholder="Seri thẻ">
+<input id="mathe" placeholder="Mã thẻ">
+<button onclick="napThe()">Gửi thẻ</button>
 </div>
 
-<div id="nap" class="hidden">
-  <h3>Nạp thẻ cào</h3>
-  <select id="cardValue">
-    <option>10k</option><option>20k</option><option>50k</option>
-    <option>100k</option><option>200k</option>
-    <option>500k</option><option>1tr</option>
-  </select><br><br>
-  <input id="seri" placeholder="Seri"><br><br>
-  <input id="code" placeholder="Mã thẻ"><br><br>
-  <button onclick="napThe()">Gửi thẻ</button>
-
-  <h3>Chuyển khoản</h3>
-  <p>Viettel Money: <b>9704229201718425041</b></p>
-  <p>Nội dung CK: <b>MTON_{{USERNAME}}</b></p>
+<div class="card">
+<h3>Chuyển khoản</h3>
+<b>Viettel Money</b><br>
+STK: <b>9704229201718425041</b><br>
+Nội dung CK: <b id="ckNoiDung"></b>
+</div>
 </div>
 
-<div id="vip" class="hidden">
-  <h3>Acc VIP</h3>
-  <div id="vipList"></div>
+<div id="vip" class="view"></div>
+<div id="white" class="view"></div>
+<div id="hisNap" class="view"></div>
+<div id="hisBuy" class="view"></div>
+
+<!-- ADMIN -->
+<div id="admin" class="view">
+<div class="card">
+<h3>Duyệt nạp thẻ</h3>
+<div id="adminNap"></div>
 </div>
 
-<div id="white" class="hidden">
-  <h3>Acc Trắng Thông Tin</h3>
-  <div id="whiteList"></div>
+<div class="card">
+<h3>Duyệt mua acc</h3>
+<div id="adminBuy"></div>
 </div>
 
-<div id="historyNap" class="hidden">
-  <h3>Lịch sử nạp</h3>
-  <p>Trạng thái: Chờ duyệt / Sai mã / Thành công</p>
+<div class="card">
+<h3>Up acc</h3>
+<input id="aname" placeholder="Tên acc">
+<input id="auser" placeholder="TK acc">
+<input id="apass" placeholder="MK acc">
+<input id="aprice" placeholder="Giá">
+<textarea id="anote" placeholder="Ghi chú"></textarea>
+<select id="atype">
+<option value="vip">VIP</option>
+<option value="white">Trắng TT</option>
+</select>
+<input type="file" onchange="loadImg(event)">
+<img id="preview">
+<button onclick="addAcc()">Thêm acc</button>
 </div>
-
-<div id="historyBuy" class="hidden">
-  <h3>Lịch sử mua</h3>
-  <p>Giao dịch thành công sẽ hiển thị tài khoản & mật khẩu</p>
-</div>
-
-<div id="admin" class="hidden">
-  <h3>Admin Panel</h3>
-
-  <h4>Up acc</h4>
-  <select id="accType">
-    <option value="vip">VIP</option>
-    <option value="white">Trắng</option>
-  </select><br><br>
-
-  <input id="accName" placeholder="Tên acc"><br><br>
-  <input id="accPrice" placeholder="Giá"><br><br>
-  <input id="accNote" placeholder="Ghi chú"><br><br>
-  <input id="accUser" placeholder="TK acc"><br><br>
-  <input id="accPass" placeholder="MK acc"><br><br>
-  <input id="accImg" placeholder="Link ảnh"><br><br>
-  <button onclick="addAcc()">Thêm acc</button>
-
-  <h4>Duyệt nạp thẻ</h4>
-  <div id="adminNap"></div>
-
-  <h4>Quản lý acc đã đăng</h4>
-  <b>Acc VIP</b>
-  <div id="adminVipList"></div>
-
-  <b>Acc Trắng Thông Tin</b>
-  <div id="adminWhiteList"></div>
 </div>
 
 </div>
 
-<div class="ai-box">
-  <div class="ai-header">AI hỗ trợ</div>
-  <div class="ai-body" id="aiBody"></div>
-  <input class="ai-input" id="aiInput" placeholder="Nhập câu hỏi..." onkeydown="aiChat(event)">
+<!-- AI -->
+<div id="aiBox">
+<div id="aiHead" onclick="toggleAI()">🤖 AI hỗ trợ</div>
+<div id="aiBody">
+<div id="chat" class="chat"></div>
+<input id="ask" placeholder="Hỏi AI..." onkeydown="if(event.key==='Enter')sendAI()">
+<button onclick="sendAI()">Gửi</button>
+</div>
 </div>
 
 <script>
-let currentUser = null;
+const ADMIN_USER="admin",ADMIN_PASS="Pvmt207#";
+let users=JSON.parse(localStorage.users||"{}");
+let accs=JSON.parse(localStorage.accs||"[]");
+let naps=JSON.parse(localStorage.naps||"[]");
+let buys=JSON.parse(localStorage.buys||"[]");
+let cur=null,img="";
 
-function toggleMenu(){
-  document.getElementById("menu").classList.toggle("show");
-}
-
-function showPage(id){
-  document.querySelectorAll(".container > div")
-    .forEach(d=>d.classList.add("hidden"));
-  document.getElementById(id).classList.remove("hidden");
-  if(id==="admin") renderAdminAcc();
+function toggle(){side.style.left=side.style.left=="0px"?"-260px":"0px"}
+function go(v){
+ if(!cur&&v!="home")return alert("Đăng nhập trước");
+ document.querySelectorAll('.view').forEach(x=>x.classList.remove("active"));
+ document.getElementById(v).classList.add("active");
+ if(v=="vip")renderShop("vip");
+ if(v=="white")renderShop("white");
+ if(v=="hisNap")renderNap();
+ if(v=="hisBuy")renderBuy();
+ if(v=="admin")renderAdmin();
+ side.style.left="-260px";
 }
 
 function register(){
-  if(regPass.value!==regPass2.value){
-    alert("Mật khẩu không khớp");return;
-  }
-  localStorage.setItem(
-    "user_"+regUser.value,
-    JSON.stringify({pass:regPass.value,money:0})
-  );
-  alert("Đăng ký thành công");
-  showPage("login");
+ if(rPass.value!=rPass2.value)return alert("Mật khẩu không khớp");
+ users[rUser.value]={pass:rPass.value,b:0};
+ localStorage.users=JSON.stringify(users);
+ alert("Đăng ký thành công");
 }
 
 function login(){
-  let u=loginUser.value,p=loginPass.value;
-  let data=localStorage.getItem("user_"+u);
-
-  if(u==="admin" && p==="Pvmt207#"){
-    currentUser={user:"admin",money:0,admin:true};
-  }
-  else if(data && JSON.parse(data).pass===p){
-    let d=JSON.parse(data);
-    currentUser={user:u,money:d.money,admin:false};
-  } else {
-    alert("Sai thông tin");return;
-  }
-
-  userInfo.innerText=currentUser.user;
-  userMoney.innerText=" | "+currentUser.money+"đ";
-
-  if(currentUser.admin)
-    adminMenu.classList.remove("hidden");
-
-  showPage("home");
-  renderAll();
+ if(lUser.value==ADMIN_USER&&lPass.value==ADMIN_PASS){
+  cur="ADMIN";
+  adminMenu.style.display="block";
+  userBox.innerText="ADMIN";
+  go("admin");return;
+ }
+ if(!users[lUser.value]||users[lUser.value].pass!=lPass.value)
+  return alert("Sai thông tin");
+ cur=lUser.value;
+ userBox.innerText=cur+" | "+users[cur].b+"đ";
+ ckNoiDung.innerText="NAP_"+cur;
+ go("nap");
 }
 
-function logout(){ location.reload(); }
-
-function addAcc(){
-  let list=JSON.parse(localStorage.getItem(accType.value))||[];
-  list.push({
-    id:Date.now(),
-    name:accName.value,
-    price:accPrice.value,
-    note:accNote.value,
-    user:accUser.value,
-    pass:accPass.value,
-    img:accImg.value
-  });
-  localStorage.setItem(accType.value,JSON.stringify(list));
-  alert("Đã thêm acc");
-  renderAll();
-}
-
-function renderAcc(type,el){
-  let list=JSON.parse(localStorage.getItem(type))||[];
-  el.innerHTML="";
-  list.forEach(a=>{
-    el.innerHTML+=`
-    <div class="acc">
-      <img src="${a.img}">
-      <h4>${a.name}</h4>
-      <p>${a.note}</p>
-      <p>Giá: ${a.price}</p>
-      <button onclick="buyAcc('${type}',${a.id})">Mua</button>
-      ${currentUser&&currentUser.admin?
-        `<button onclick="removeAcc('${type}',${a.id})">❌ Xóa</button>`:""}
-    </div>`;
-  });
-}
-
-function buyAcc(type,id){
-  alert("Giao dịch chờ admin duyệt (demo)");
-}
-
-function removeAcc(type,id){
-  let list=JSON.parse(localStorage.getItem(type))||[];
-  list=list.filter(a=>a.id!==id);
-  localStorage.setItem(type,JSON.stringify(list));
-  renderAll();
-  renderAdminAcc();
-}
-
-function renderAll(){
-  if(currentUser){
-    renderAcc("vip",vipList);
-    renderAcc("white",whiteList);
-  }
-}
-
-function renderAdminAcc(){
-  if(!currentUser || !currentUser.admin) return;
-
-  let vip=JSON.parse(localStorage.getItem("vip"))||[];
-  let white=JSON.parse(localStorage.getItem("white"))||[];
-
-  adminVipList.innerHTML="";
-  adminWhiteList.innerHTML="";
-
-  vip.forEach(a=>{
-    adminVipList.innerHTML+=`
-    <div class="acc">
-      <b>${a.name}</b> - ${a.price}<br>
-      <button onclick="removeAcc('vip',${a.id})">❌ Xóa acc VIP</button>
-    </div>`;
-  });
-
-  white.forEach(a=>{
-    adminWhiteList.innerHTML+=`
-    <div class="acc">
-      <b>${a.name}</b> - ${a.price}<br>
-      <button onclick="removeAcc('white',${a.id})">❌ Xóa acc Trắng</button>
-    </div>`;
-  });
-}
+function logout(){location.reload()}
 
 function napThe(){
-  alert("Thẻ đã gửi – chờ admin duyệt");
+ naps.push({u:cur,mg:+menhgia.value,seri,mathe,st:"Chờ"});
+ localStorage.naps=JSON.stringify(naps);
+ alert("Đã gửi thẻ");
 }
 
-function aiChat(e){
-  if(e.key==="Enter"){
-    aiBody.innerHTML+=`<div>🤖 Shop sẽ phản hồi sớm!</div>`;
-    aiInput.value="";
-  }
+function renderNap(){
+ hisNap.innerHTML="";
+ naps.filter(n=>n.u==cur).forEach(n=>{
+  hisNap.innerHTML+=`<div class="card">${n.mg}đ - ${n.st}</div>`;
+ });
+}
+
+function renderShop(t){
+ let box=document.getElementById(t);box.innerHTML="";
+ accs.filter(a=>a.type==t).forEach((a,i)=>{
+  box.innerHTML+=`
+  <div class="card">
+   <img src="${a.img}">
+   <b>${a.name}</b><br>${a.price}đ<br>
+   <span class="small">${a.note}</span><br>
+   <button onclick="buy(${i})">Mua</button>
+  </div>`;
+ });
+}
+
+function buy(i){
+ buys.push({u:cur,acc:accs[i],st:"Chờ"});
+ localStorage.buys=JSON.stringify(buys);
+ alert("Đã gửi yêu cầu mua");
+}
+
+function renderBuy(){
+ hisBuy.innerHTML="";
+ buys.filter(b=>b.u==cur).forEach(b=>{
+  hisBuy.innerHTML+=`<div class="card">${b.acc.name} - ${b.st}
+  ${b.st=="Duyệt"?`<hr>TK:${b.acc.user}<br>MK:${b.acc.pass}`:""}</div>`;
+ });
+}
+
+function renderAdmin(){
+ adminNap.innerHTML="";
+ naps.forEach((n,i)=>{
+  if(n.st!="Chờ")return;
+  adminNap.innerHTML+=`
+  <div class="card">${n.u} - ${n.mg}đ
+  <button onclick="duyetNap(${i})">Duyệt</button>
+  <button onclick="saiNap(${i})">Sai</button>
+  </div>`;
+ });
+ adminBuy.innerHTML="";
+ buys.forEach((b,i)=>{
+  if(b.st!="Chờ")return;
+  adminBuy.innerHTML+=`
+  <div class="card">${b.u} mua ${b.acc.name}
+  <button onclick="duyetBuy(${i})">Duyệt</button>
+  </div>`;
+ });
+}
+
+function duyetNap(i){
+ let n=naps[i];
+ n.st="Duyệt";
+ users[n.u].b+=n.mg;
+ localStorage.users=JSON.stringify(users);
+ localStorage.naps=JSON.stringify(naps);
+ renderAdmin();
+}
+
+function saiNap(i){
+ naps[i].st="Sai";
+ localStorage.naps=JSON.stringify(naps);
+ renderAdmin();
+}
+
+function duyetBuy(i){
+ let b=buys[i];
+ if(users[b.u].b<b.acc.price)return alert("Không đủ tiền");
+ users[b.u].b-=b.acc.price;
+ b.st="Duyệt";
+ accs=accs.filter(a=>a!=b.acc);
+ localStorage.users=JSON.stringify(users);
+ localStorage.accs=JSON.stringify(accs);
+ localStorage.buys=JSON.stringify(buys);
+ renderAdmin();
+}
+
+function loadImg(e){
+ let r=new FileReader();
+ r.onload=()=>{img=r.result;preview.src=img};
+ r.readAsDataURL(e.target.files[0]);
+}
+function addAcc(){
+ accs.push({name:aname.value,user:auser.value,pass:apass.value,price:+aprice.value,note:anote.value,type:atype.value,img});
+ localStorage.accs=JSON.stringify(accs);
+ alert("Đã thêm acc");
+}
+
+function toggleAI(){
+ aiBody.style.display=aiBody.style.display=="none"?"block":"none";
+}
+function sendAI(){
+ if(!ask.value)return;
+ chat.innerHTML+=`<div class="user">Bạn: ${ask.value}</div>`;
+ let a="Bạn vui lòng liên hệ admin.";
+ if(ask.value.includes("mua"))a="Chọn acc → bấm mua → admin duyệt.";
+ if(ask.value.includes("nạp"))a="Vào mục nạp tiền để nạp.";
+ chat.innerHTML+=`<div class="ai">AI: ${a}</div>`;
+ ask.value="";
+ chat.scrollTop=9999;
 }
 </script>
 
