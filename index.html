@@ -5,66 +5,20 @@
 <title>MTON Shop Acc Roblox</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body{
-margin:0;
-font-family:Arial,Helvetica,sans-serif;
-background:#0d0d0d;
-color:#ffffff;
-}
-header{
-background:#ff9800;
-padding:20px;
-text-align:center;
-}
-.section{
-max-width:900px;
-margin:auto;
-padding:20px;
-}
-.acc{
-background:#1e1e1e;
-padding:15px;
-margin-bottom:15px;
-border-radius:10px;
-}
-.acc p{
-margin:6px 0;
-}
-.price{
-color:#4caf50;
-font-weight:bold;
-}
-button{
-padding:10px 16px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-font-size:14px;
-}
-.buy{
-background:#4caf50;
-color:white;
-}
-.admin-btn{
-background:#2196f3;
-color:white;
-}
-.hidden{
-display:none;
-}
-input{
-width:100%;
-padding:8px;
-margin:6px 0;
-border-radius:5px;
-border:none;
-}
-footer{
-text-align:center;
-padding:15px;
-color:#aaa;
-font-size:14px;
-}
+body{margin:0;font-family:Arial;background:#0d0d0d;color:#fff}
+header{background:#ff9800;padding:20px;text-align:center}
+.section{max-width:900px;margin:auto;padding:20px}
+.acc{background:#1e1e1e;padding:15px;margin-bottom:15px;border-radius:10px}
+.acc img{width:100%;border-radius:8px;margin-bottom:10px}
+.price{color:#4caf50;font-weight:bold}
+button{padding:10px 16px;border:none;border-radius:6px;cursor:pointer}
+.buy{background:#4caf50;color:#fff}
+.admin-btn{background:#2196f3;color:#fff}
+.hidden{display:none}
+input,textarea,select{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
+textarea{resize:vertical}
+footer{text-align:center;padding:15px;color:#aaa}
+.note{font-size:13px;color:#aaa}
 </style>
 </head>
 
@@ -72,39 +26,50 @@ font-size:14px;
 
 <header>
 <h1>🔥 MTON SHOP ACC ROBLOX 🔥</h1>
-<p>Uy tín – Giao dịch nhanh – Hỗ trợ Facebook</p>
+<p>Uy tín – Giao dịch nhanh</p>
 <p>🌐 https://mton.github.io</p>
 </header>
+
+<!-- TÀI KHOẢN KHÁCH -->
+<div class="section">
+<h2>👤 Tài khoản khách hàng</h2>
+
+<div id="guestBox">
+<input id="regUser" placeholder="Tên đăng ký">
+<input id="regPass" type="password" placeholder="Mật khẩu">
+<button class="buy" onclick="register()">Đăng ký</button>
+<br><br>
+<input id="loginUser" placeholder="Tên đăng nhập">
+<input id="loginPass" type="password" placeholder="Mật khẩu">
+<button class="buy" onclick="loginUser()">Đăng nhập</button>
+</div>
+
+<div id="welcomeBox" class="hidden">
+<p>👋 Xin chào <b id="guestName"></b></p>
+<button class="admin-btn" onclick="logout()">Đăng xuất</button>
+</div>
+</div>
 
 <!-- DANH SÁCH ACC -->
 <div class="section">
 <h2>🎮 Acc đang bán</h2>
-
 <div id="accList">
-
-<div class="acc">
-<p>⭐ Acc Roblox VIP</p>
-<p>💎 Robux: 5.000</p>
-<p>🔒 Trắng thông tin</p>
-<p class="price">💰 300.000đ</p>
-<a href="https://www.facebook.com/share/16sFRkuEd7/" target="_blank">
-<button class="buy">Liên hệ mua</button>
-</a>
-</div>
-
+<p class="note">📌 Acc sẽ hiển thị tại đây</p>
 </div>
 </div>
 
-<!-- NẠP TIỀN -->
+<!-- NẠP THẺ -->
 <div class="section">
-<h2>💳 Nạp tiền</h2>
-<p><b>Chuyển khoản ngân hàng</b></p>
-<p>Ngân hàng: MB Bank</p>
-<p>STK: 0123456789</p>
-<p>Chủ tài khoản: MTON</p>
-
-<p><b>Thẻ cào:</b> Viettel / Mobifone / Vinaphone</p>
-<p>📌 Chuyển tiền xong → inbox Facebook gửi bill</p>
+<h2>💳 Nạp thẻ cào</h2>
+<select id="cardType">
+<option>Viettel</option>
+<option>Mobifone</option>
+<option>Vinaphone</option>
+</select>
+<input id="cardCode" placeholder="Mã thẻ">
+<input id="cardSeri" placeholder="Seri">
+<button class="buy" onclick="submitCard()">Nạp thẻ</button>
+<p class="note">📌 Mã thẻ chỉ chủ shop xem được</p>
 </div>
 
 <!-- LIÊN HỆ -->
@@ -120,19 +85,21 @@ font-size:14px;
 <button class="admin-btn" onclick="toggleLogin()">🔐 Admin</button>
 
 <div id="loginBox" class="hidden">
-<input type="password" id="adminPass" placeholder="Nhập mật khẩu admin">
-<button class="admin-btn" onclick="login()">Đăng nhập</button>
+<input type="password" id="adminPass" placeholder="Mật khẩu admin">
+<button class="admin-btn" onclick="loginAdmin()">Đăng nhập admin</button>
 </div>
 
 <div id="adminPanel" class="hidden">
-<h3>➕ Thêm acc (tạm thời)</h3>
-<input id="name" placeholder="Tên acc">
+<h3>➕ Thêm acc</h3>
+<input id="accName" placeholder="Tên acc">
 <input id="robux" placeholder="Robux">
 <input id="price" placeholder="Giá">
+<textarea id="desc" placeholder="Mô tả acc"></textarea>
+<input type="file" id="imgInput" accept="image/*">
 <button class="admin-btn" onclick="addAcc()">Thêm acc</button>
-<p style="font-size:13px;color:#aaa">
-⚠ Acc thêm bằng admin sẽ mất khi tải lại trang
-</p>
+
+<h3>📥 Thẻ đã nạp (chỉ admin)</h3>
+<div id="cardList" class="note"></div>
 </div>
 </div>
 
@@ -141,48 +108,109 @@ font-size:14px;
 </footer>
 
 <script>
-const ADMIN_PASSWORD = "mton123"; // đổi mật khẩu tại đây
+/* ====== CẤU HÌNH ====== */
+const ADMIN_PASSWORD = "mton123";
 
-function toggleLogin(){
-document.getElementById("loginBox").classList.toggle("hidden");
+/* ====== KHÁCH HÀNG ====== */
+function register(){
+let u = regUser.value;
+let p = regPass.value;
+if(!u || !p){ alert("Nhập đủ thông tin"); return; }
+
+let users = JSON.parse(localStorage.getItem("users") || "{}");
+if(users[u]){ alert("Tài khoản đã tồn tại"); return; }
+
+users[u] = p;
+localStorage.setItem("users", JSON.stringify(users));
+alert("Đăng ký thành công");
+regUser.value = regPass.value = "";
 }
 
-function login(){
-let pass = document.getElementById("adminPass").value;
-if(pass === ADMIN_PASSWORD){
-document.getElementById("adminPanel").classList.remove("hidden");
-alert("Đăng nhập admin thành công");
+function loginUser(){
+let u = loginUser.value;
+let p = loginPass.value;
+let users = JSON.parse(localStorage.getItem("users") || "{}");
+
+if(users[u] && users[u] === p){
+localStorage.setItem("currentUser", u);
+showUser();
 }else{
-alert("Sai mật khẩu");
+alert("Sai tài khoản hoặc mật khẩu");
 }
 }
 
+function showUser(){
+let u = localStorage.getItem("currentUser");
+if(u){
+guestBox.classList.add("hidden");
+welcomeBox.classList.remove("hidden");
+guestName.innerText = u;
+}
+}
+
+function logout(){
+localStorage.removeItem("currentUser");
+location.reload();
+}
+
+showUser();
+
+/* ====== ADMIN ====== */
+function toggleLogin(){
+loginBox.classList.toggle("hidden");
+}
+function loginAdmin(){
+if(adminPass.value === ADMIN_PASSWORD){
+adminPanel.classList.remove("hidden");
+loadCards();
+alert("Admin đăng nhập thành công");
+}else alert("Sai mật khẩu admin");
+}
+
+/* ====== ADD ACC ====== */
 function addAcc(){
-let name = document.getElementById("name").value;
-let robux = document.getElementById("robux").value;
-let price = document.getElementById("price").value;
-
-if(!name || !robux || !price){
-alert("Vui lòng nhập đủ thông tin");
-return;
-}
-
-let accHTML = `
+if(!imgInput.files[0]){ alert("Chọn ảnh acc"); return; }
+let reader = new FileReader();
+reader.onload = function(){
+accList.innerHTML += `
 <div class="acc">
-<p>⭐ ${name}</p>
-<p>💎 Robux: ${robux}</p>
-<p class="price">💰 ${price}đ</p>
+<img src="${reader.result}">
+<p>⭐ ${accName.value}</p>
+<p>💎 Robux: ${robux.value}</p>
+<p>${desc.value}</p>
+<p class="price">💰 ${price.value}đ</p>
 <a href="https://www.facebook.com/share/16sFRkuEd7/" target="_blank">
 <button class="buy">Liên hệ mua</button>
 </a>
-</div>
-`;
+</div>`;
+}
+reader.readAsDataURL(imgInput.files[0]);
 
-document.getElementById("accList").innerHTML += accHTML;
+accName.value = robux.value = price.value = desc.value = "";
+imgInput.value = "";
+}
 
-document.getElementById("name").value = "";
-document.getElementById("robux").value = "";
-document.getElementById("price").value = "";
+/* ====== NẠP THẺ ====== */
+function submitCard(){
+let cards = JSON.parse(localStorage.getItem("cards") || "[]");
+cards.push({
+type: cardType.value,
+code: cardCode.value,
+seri: cardSeri.value,
+user: localStorage.getItem("currentUser") || "Khách"
+});
+localStorage.setItem("cards", JSON.stringify(cards));
+alert("Đã gửi thẻ, admin sẽ xử lý");
+cardCode.value = cardSeri.value = "";
+}
+
+/* ====== ADMIN XEM THẺ ====== */
+function loadCards(){
+let cards = JSON.parse(localStorage.getItem("cards") || "[]");
+cardList.innerHTML = "";
+cards.forEach(c=>{
+cardList.innerHTML += `<p>📌 ${c.user} | ${c.type} | ${c.code} | ${c.seri}</p>`;
+});
 }
 </script>
 
