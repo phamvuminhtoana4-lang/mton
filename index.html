@@ -7,43 +7,44 @@
 <style>
 body{
  margin:0;font-family:Arial;
- background:radial-gradient(circle at top,#1e293b,#020617);
+ background:linear-gradient(180deg,#020617,#1e293b);
  color:#fff
 }
 header{
- background:rgba(2,6,23,.95);
+ background:#020617;
  padding:12px 15px;
  display:flex;justify-content:space-between;align-items:center
 }
 #userInfo{
  background:#020617;padding:6px 10px;border-radius:8px;font-size:14px
 }
+.container{padding:15px}
+.card{
+ background:#020617;padding:15px;border-radius:12px;margin-bottom:15px
+}
+input{
+ width:100%;padding:10px;margin:6px 0;
+ border-radius:8px;border:none
+}
+button{
+ width:100%;padding:10px;
+ background:#fde047;border:none;
+ font-weight:bold;border-radius:8px;cursor:pointer
+}
+button:hover{background:#facc15}
 #menu{
  display:none;
  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
- gap:10px;padding:15px
+ gap:10px;margin-top:10px
 }
 .menu-item{
- background:#020617;padding:18px;border-radius:12px;
+ background:#020617;padding:15px;border-radius:12px;
  text-align:center;cursor:pointer
 }
 .menu-item:hover{background:#1e293b}
-.view{display:none;padding:15px}
+.view{display:none}
 .active{display:block}
-.card{
- background:#020617;padding:12px;border-radius:12px;margin-bottom:12px
-}
-input,select{
- width:100%;padding:8px;border-radius:6px;border:none;margin:5px 0
-}
-.btn{
- background:#fde047;color:#000;border:none;
- font-weight:bold;padding:8px;border-radius:6px;cursor:pointer
-}
 .small{font-size:13px;color:#cbd5f5}
-.rank1{color:#facc15}
-.rank2{color:#e5e7eb}
-.rank3{color:#fb7185}
 </style>
 </head>
 
@@ -54,34 +55,45 @@ input,select{
 <div id="userInfo">Chưa đăng nhập</div>
 </header>
 
-<!-- MENU -->
-<div id="menu">
-<div class="menu-item" onclick="openView('home')">🏠 Trang chính</div>
-<div class="menu-item" onclick="openView('shop')">🛒 Shop Acc</div>
-<div class="menu-item" onclick="openView('myacc')">🎮 Acc đã mua</div>
-<div class="menu-item" onclick="openView('history')">📜 Lịch sử</div>
-</div>
+<div class="container">
 
-<!-- TRANG CHÍNH = GIỚI THIỆU + ĐĂNG NHẬP + NẠP TIỀN -->
+<!-- TRANG CHÍNH -->
 <div id="home" class="view active">
 
 <div class="card">
 <h2>👋 Chào mừng bạn đến với shop của Toàn</h2>
-<p class="small">
-Chuyên bán acc game uy tín – giao dịch minh bạch – hỗ trợ nhanh chóng.
-Vui lòng đăng nhập để sử dụng dịch vụ.
-</p>
+<p class="small">Vui lòng đăng ký hoặc đăng nhập để sử dụng dịch vụ</p>
 </div>
 
 <div class="card">
-<h3>🔐 Đăng ký / Đăng nhập</h3>
-<input id="username" placeholder="Tên tài khoản">
-<button class="btn" onclick="login()">Đăng nhập</button>
+<h3>📝 Đăng ký</h3>
+<input id="regUser" placeholder="Tên tài khoản">
+<input id="regPass" type="password" placeholder="Mật khẩu">
+<input id="regPass2" type="password" placeholder="Nhập lại mật khẩu">
+<button onclick="register()">Đăng ký</button>
 </div>
 
+<div class="card">
+<h3>🔐 Đăng nhập</h3>
+<input id="logUser" placeholder="Tên tài khoản">
+<input id="logPass" type="password" placeholder="Mật khẩu">
+<button onclick="login()">Đăng nhập</button>
+</div>
+
+</div>
+
+<!-- MENU -->
+<div id="menu">
+<div class="menu-item" onclick="openView('nap')">💳 Nạp tiền</div>
+<div class="menu-item" onclick="openView('shop')">🛒 Shop Acc</div>
+<div class="menu-item" onclick="openView('history')">📜 Lịch sử</div>
+</div>
+
+<!-- NẠP -->
+<div id="nap" class="view container">
 <div class="card">
 <h3>💳 Nạp tiền</h3>
-<select id="cardVal">
+<select id="money">
 <option value="10000">10.000đ</option>
 <option value="50000">50.000đ</option>
 <option value="100000">100.000đ</option>
@@ -90,94 +102,81 @@ Vui lòng đăng nhập để sử dụng dịch vụ.
 </select>
 <input placeholder="Mã thẻ">
 <input placeholder="Seri">
-<button class="btn" onclick="napTien()">Gửi thẻ</button>
-<p class="small">Thẻ sẽ được admin duyệt</p>
+<button onclick="nap()">Gửi thẻ</button>
 </div>
-
-<div class="card">
-<h3>🔥 Top nạp tháng</h3>
-<div id="topList">Chưa có dữ liệu</div>
-</div>
-
 </div>
 
 <!-- SHOP -->
-<div id="shop" class="view">
+<div id="shop" class="view container">
 <div class="card">
 <h3>🛒 Shop Acc</h3>
-<p>Acc sẽ hiển thị khi admin thêm.</p>
-</div>
-</div>
-
-<!-- MY ACC -->
-<div id="myacc" class="view">
-<div class="card">
-<h3>🎮 Acc đã mua</h3>
-<p>Chưa có acc.</p>
+<p>Acc sẽ hiển thị khi admin thêm</p>
 </div>
 </div>
 
 <!-- HISTORY -->
-<div id="history" class="view">
+<div id="history" class="view container">
 <div class="card">
-<h3>📜 Lịch sử giao dịch</h3>
+<h3>📜 Lịch sử</h3>
 <div id="his"></div>
 </div>
 </div>
 
+</div>
+
 <script>
+let users=JSON.parse(localStorage.users||"{}");
 let currentUser="";
-let bal=JSON.parse(localStorage.bal||"{}");
-let top=JSON.parse(localStorage.top||"{}");
-let history=JSON.parse(localStorage.history||"{}");
 
-function login(){
- currentUser=username.value;
- if(!currentUser) return;
- bal[currentUser]=bal[currentUser]||0;
- history[currentUser]=history[currentUser]||[];
- localStorage.bal=JSON.stringify(bal);
- localStorage.history=JSON.stringify(history);
+function register(){
+ let u=regUser.value.trim();
+ let p=regPass.value;
+ let p2=regPass2.value;
+ if(!u||!p) return alert("Nhập đầy đủ thông tin");
+ if(p!==p2) return alert("Mật khẩu không khớp");
+ if(users[u]) return alert("Tài khoản đã tồn tại");
 
- document.getElementById("menu").style.display="grid";
- updateUserInfo();
- renderTop();
+ users[u]={password:p,balance:0,history:[]};
+ localStorage.users=JSON.stringify(users);
+ alert("Đăng ký thành công");
+ regUser.value=regPass.value=regPass2.value="";
 }
 
-function updateUserInfo(){
+function login(){
+ let u=logUser.value.trim();
+ let p=logPass.value;
+ if(!users[u]||users[u].password!==p)
+  return alert("Sai tài khoản hoặc mật khẩu");
+
+ currentUser=u;
+ document.getElementById("menu").style.display="grid";
+ updateUI();
+ openView("nap");
+}
+
+function updateUI(){
  document.getElementById("userInfo").innerHTML=
-  "👤 "+currentUser+" | 💰 "+bal[currentUser]+"đ";
+  "👤 "+currentUser+" | 💰 "+users[currentUser].balance+"đ";
+ renderHistory();
+ localStorage.users=JSON.stringify(users);
+}
+
+function nap(){
+ let v=Number(money.value);
+ users[currentUser].balance+=v;
+ users[currentUser].history.push("Nạp "+v+"đ");
+ updateUI();
+ alert("Đã gửi yêu cầu nạp");
+}
+
+function renderHistory(){
+ let h=users[currentUser].history.map(i=>"<p>"+i+"</p>").join("");
+ document.getElementById("his").innerHTML=h||"Chưa có";
 }
 
 function openView(id){
  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
  document.getElementById(id).classList.add('active');
-}
-
-function napTien(){
- if(!currentUser){alert("Vui lòng đăng nhập");return;}
- let v=Number(cardVal.value);
- bal[currentUser]+=v;
- top[currentUser]=(top[currentUser]||0)+v;
- history[currentUser].push("Nạp "+v+"đ");
-
- localStorage.bal=JSON.stringify(bal);
- localStorage.top=JSON.stringify(top);
- localStorage.history=JSON.stringify(history);
-
- updateUserInfo();
- renderTop();
- alert("Đã gửi yêu cầu nạp");
-}
-
-function renderTop(){
- let arr=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,5);
- let html="";
- arr.forEach((e,i)=>{
-  let icon=i==0?"🥇":i==1?"🥈":i==2?"🥉":"#"+(i+1);
-  html+=`<p>${icon} ${e[0]} - ${e[1]}đ</p>`;
- });
- document.getElementById("topList").innerHTML=html||"Chưa có";
 }
 </script>
 
