@@ -5,251 +5,215 @@
 <title>MTON Shop Acc Roblox</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-body{margin:0;font-family:Arial;background:#0d0d0d;color:#fff}
-header{background:#ff9800;padding:20px;text-align:center}
-.section{max-width:900px;margin:auto;padding:20px}
-.box{background:#1a1a1a;padding:15px;border-radius:10px;margin-bottom:15px}
-.acc{background:#222;padding:15px;border-radius:10px;margin-bottom:10px}
-.price{color:#4caf50;font-weight:bold}
-button{padding:10px 16px;border:none;border-radius:6px;cursor:pointer}
-.buy{background:#4caf50;color:#fff}
-.admin-btn{background:#2196f3;color:#fff}
+:root{
+ --bg:#0b0b0b;--card:#1a1a1a;--card2:#222;--pri:#ff9800;--pri2:#ff5722;--ok:#4caf50;--info:#2196f3;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial;background:var(--bg);color:#fff;overflow-x:hidden}
+header{background:linear-gradient(90deg,var(--pri),var(--pri2));padding:20px;text-align:center;position:relative}
+.section{max-width:980px;margin:auto;padding:15px}
+.box{background:var(--card);padding:15px;border-radius:14px;margin-bottom:15px}
+.acc{background:var(--card2);padding:12px;border-radius:12px;margin-bottom:10px}
+.price{color:var(--ok);font-weight:bold}
+button{padding:9px 14px;border:none;border-radius:10px;font-weight:bold;cursor:pointer}
+.buy{background:var(--ok);color:#fff}
+.admin-btn{background:var(--info);color:#fff}
 .hidden{display:none}
-input,textarea,select{width:100%;padding:8px;margin:6px 0;border-radius:5px;border:none}
+input,select{width:100%;padding:9px;margin:6px 0;border-radius:8px;border:none}
 footer{text-align:center;color:#aaa;padding:20px}
+
+/* Toast */
+#toast{position:fixed;top:20px;right:20px;z-index:9999}
+.toast{background:#333;padding:10px 14px;border-radius:10px;margin-bottom:8px;opacity:.95}
+
+/* AI CHAT */
+#aiChat{position:fixed;bottom:20px;right:20px;width:320px;background:#141414;border-radius:14px;overflow:hidden;z-index:999}
+#aiHeader{background:var(--pri);padding:8px;display:flex;justify-content:space-between;align-items:center}
+#chatBox{height:220px;overflow-y:auto;padding:8px;font-size:14px}
+#aiChat.closed #chatBox,#aiChat.closed #chatInput,#aiChat.closed #sendBtn{display:none}
+#chatBox div{margin-bottom:6px}
+.ai{color:#4cafef}
+.user{color:#fff}
+
+/* TẾT EFFECT */
+.lantern{position:absolute;top:-40px;width:26px;height:36px;background:#e53935;border-radius:6px;box-shadow:0 0 10px #e53935;animation:float 6s linear infinite}
+@keyframes float{0%{transform:translateY(-20px)}100%{transform:translateY(120vh)}}
+.fire{position:fixed;pointer-events:none;width:6px;height:6px;border-radius:50%;animation:boom 1s ease-out forwards}
+@keyframes boom{to{transform:translateY(-120px) scale(0);opacity:0}}
 </style>
 </head>
 
 <body>
 
 <header>
-<h1>🔥 MTON SHOP ACC ROBLOX 🔥</h1>
-<p>https://mton.github.io</p>
+<h1>🎉 MTON SHOP ACC ROBLOX 🎉</h1>
+<p>Giao dịch thủ công – an toàn – minh bạch</p>
 </header>
 
-<!-- KHÁCH -->
 <div class="section box">
 <h2>👤 Khách hàng</h2>
 <input id="username" placeholder="Tên đăng nhập">
 <button class="buy" onclick="login()">Đăng nhập</button>
 <p id="hello"></p>
+<p id="balance"></p>
 </div>
 
-<!-- ACC -->
 <div class="section box">
 <h2>🎮 Acc đang bán</h2>
 <div id="accList"></div>
 </div>
 
-<!-- NẠP -->
 <div class="section box">
 <h2>💳 Nạp thẻ</h2>
-
-<select id="cardType">
-<option>Viettel</option>
-<option>Mobifone</option>
-<option>Vinaphone</option>
-</select>
-
+<select id="cardType"><option>Viettel</option><option>Mobifone</option><option>Vinaphone</option></select>
 <select id="cardValue">
-<option value="10000">10.000đ</option>
-<option value="20000">20.000đ</option>
-<option value="50000">50.000đ</option>
-<option value="100000">100.000đ</option>
-<option value="200000">200.000đ</option>
+<option value="10000">10.000đ</option><option value="20000">20.000đ</option>
+<option value="50000">50.000đ</option><option value="100000">100.000đ</option>
+<option value="200000">200.000đ</option><option value="500000">500.000đ</option>
 </select>
-
 <input id="cardCode" placeholder="Mã thẻ">
 <input id="cardSeri" placeholder="Seri">
 <button class="buy" onclick="sendCard()">Gửi thẻ</button>
-
-<h3>📱 Hoặc quét QR</h3>
-<img src="https://i.imgur.com/OVQXK9y.png" width="200">
-<p>(Admin thay QR của mình)</p>
 </div>
 
-<!-- ACC CỦA TÔI -->
-<div class="section box">
-<h2>🔓 Acc của bạn</h2>
-<div id="myAcc"></div>
-</div>
+<div class="section box"><h2>📜 Lịch sử nạp thẻ</h2><div id="cardHistory"></div></div>
+<div class="section box"><h2>📦 Lịch sử mua acc</h2><div id="buyHistory"></div></div>
+<div class="section box"><h2>🔓 Acc đã mua</h2><div id="myAcc"></div></div>
 
-<!-- LIÊN HỆ -->
-<div class="section box">
-<h2>📞 Liên hệ</h2>
-<a href="https://www.facebook.com/share/16sFRkuEd7/" target="_blank">
-<button class="buy">Inbox Facebook</button>
-</a>
-</div>
-
-<!-- ADMIN -->
 <div class="section box">
 <button class="admin-btn" onclick="adminLogin()">🔐 Admin</button>
-
 <div id="adminPanel" class="hidden">
-
 <h3>➕ Thêm acc</h3>
 <input id="accName" placeholder="Tên acc">
 <input id="accPrice" placeholder="Giá">
-<textarea id="accDesc" placeholder="Mô tả"></textarea>
-<input id="accUser" placeholder="TK acc (ẩn)">
-<input id="accPass" placeholder="MK acc (ẩn)">
+<input id="accUser" placeholder="TK acc">
+<input id="accPass" placeholder="MK acc">
 <button class="admin-btn" onclick="addAcc()">Thêm acc</button>
-
-<h3>📥 Thẻ khách đã nạp</h3>
-<div id="cardAdmin"></div>
-
+<hr>
+<h3>📥 Thẻ khách nạp</h3>
+<div id="adminCards"></div>
 </div>
 </div>
 
 <footer>© 2026 MTON Shop</footer>
 
+<!-- Toast -->
+<div id="toast"></div>
+
 <!-- AI CHAT -->
-<div id="aiChat" style="position:fixed;bottom:20px;right:20px;width:300px;background:#1a1a1a;border-radius:10px;box-shadow:0 0 10px #000;overflow:hidden;z-index:9999">
-<div style="background:#ff9800;padding:10px;font-weight:bold">🤖 AI Hỗ trợ MTON</div>
-<div id="chatBox" style="height:220px;overflow-y:auto;padding:10px;font-size:14px"></div>
-<div style="display:flex">
-<input id="chatInput" placeholder="Nhập câu hỏi..." style="flex:1;padding:8px;border:none">
-<button onclick="sendChat()" style="background:#4caf50;color:#fff;border:none;padding:8px 12px">Gửi</button>
-</div>
+<div id="aiChat">
+ <div id="aiHeader"><b>🤖 AI MTON</b><button onclick="toggleChat()">➖</button></div>
+ <div id="chatBox"></div>
+ <input id="chatInput" placeholder="Hỏi gì đó..." onkeydown="if(event.key==='Enter')sendChat()">
+ <button id="sendBtn" class="buy" onclick="sendChat()">Gửi</button>
 </div>
 
 <script>
+/* ====== CONFIG ====== */
 const ADMIN_PASS="Pvmt207#";
+
+/* ====== UTIL ====== */
+const $=id=>document.getElementById(id);
+function toast(msg){$('toast').innerHTML+=`<div class="toast">${msg}</div>`;setTimeout(()=>{$('toast').firstChild?.remove()},2500)}
+
+/* ====== TẾT EFFECT ====== */
+for(let i=0;i<6;i++){let l=document.createElement('div');l.className='lantern';l.style.left=Math.random()*100+'%';l.style.animationDelay=(Math.random()*6)+'s';document.body.appendChild(l)}
+setInterval(()=>{let f=document.createElement('div');f.className='fire';f.style.left=Math.random()*100+'%';f.style.bottom='0';f.style.background=`hsl(${Math.random()*360},80%,60%)`;document.body.appendChild(f);setTimeout(()=>f.remove(),900)},1200)
+
+/* ====== SHOP LOGIC ====== */
 let currentUser="";
-
-/* KHÁCH */
 function login(){
-currentUser=username.value;
-if(!currentUser) return;
-localStorage.currentUser=currentUser;
-hello.innerText="Xin chào "+currentUser;
-loadMyAcc();
+ currentUser=$('username').value.trim(); if(!currentUser)return;
+ localStorage.currentUser=currentUser;
+ let w=JSON.parse(localStorage.wallets||"{}"); if(w[currentUser]==null)w[currentUser]=0;
+ localStorage.wallets=JSON.stringify(w);
+ $('hello').innerText="Xin chào "+currentUser;
+ $('balance').innerText="💰 "+w[currentUser].toLocaleString()+"đ";
+ renderAcc(); loadMyAcc(); loadCardHistory(); loadBuyHistory();
 }
-
-/* ADMIN */
-function adminLogin(){
-let p=prompt("Mật khẩu admin:");
-if(p===ADMIN_PASS){
-adminPanel.classList.remove("hidden");
-loadCards();
-alert("Admin đăng nhập thành công");
-}
-}
-
-/* ACC */
-function addAcc(){
-let accs=JSON.parse(localStorage.accs||"[]");
-accs.push({name:accName.value,price:accPrice.value,desc:accDesc.value,user:accUser.value,pass:accPass.value,sold:false});
-localStorage.accs=JSON.stringify(accs);
-renderAcc();
-}
-
-function renderAcc(){
-let accs=JSON.parse(localStorage.accs||"[]");
-accList.innerHTML="";
-accs.forEach((a,i)=>{
-if(!a.sold){
-accList.innerHTML+=`
-<div class="acc">
-<p><b>${a.name}</b></p>
-<p>${a.desc}</p>
-<p class="price">${a.price}đ</p>
-<button class="buy" onclick="buyAcc(${i})">Mua</button>
-</div>`;
-}
-});
-}
-renderAcc();
-
-function buyAcc(i){
-let accs=JSON.parse(localStorage.accs);
-accs[i].buyer=currentUser;
-localStorage.accs=JSON.stringify(accs);
-alert("Đợi admin duyệt giao dịch");
-}
-
-/* THẺ */
 function sendCard(){
-let cards=JSON.parse(localStorage.cards||"[]");
-cards.push({user:currentUser,type:cardType.value,value:cardValue.value,code:cardCode.value,seri:cardSeri.value,done:false});
-localStorage.cards=JSON.stringify(cards);
-alert("Đã gửi thẻ");
+ let cards=JSON.parse(localStorage.cards||"[]");
+ cards.push({user:currentUser,type:cardType.value,value:+cardValue.value,code:cardCode.value,seri:cardSeri.value,status:"Chờ duyệt",time:new Date().toLocaleString()});
+ localStorage.cards=JSON.stringify(cards);
+ cardCode.value=""; cardSeri.value="";
+ toast("Đã gửi thẻ, chờ duyệt!");
+ loadCardHistory();
 }
-
-function loadCards(){
-let cards=JSON.parse(localStorage.cards||"[]");
-let accs=JSON.parse(localStorage.accs||"[]");
-cardAdmin.innerHTML="";
-cards.forEach((c,i)=>{
-if(!c.done){
-cardAdmin.innerHTML+=`
-<div class="box">
-<p>${c.user} | ${c.type} | ${c.value}đ</p>
-<button onclick="approve(${i})">Duyệt</button>
-</div>`;
+function loadCardHistory(){
+ let c=JSON.parse(localStorage.cards||"[]"); cardHistory.innerHTML="";
+ c.filter(x=>x.user===currentUser).forEach(x=>{
+  cardHistory.innerHTML+=`<div class="acc">${x.time}<br>${x.type} - ${x.value.toLocaleString()}đ<br>Trạng thái: ${x.status}</div>`;
+ });
 }
-});
+function adminLogin(){
+ if(prompt("Mật khẩu admin:")===ADMIN_PASS){ adminPanel.classList.remove("hidden"); loadAdminCards(); }
 }
-
-function approve(i){
-let cards=JSON.parse(localStorage.cards);
-let accs=JSON.parse(localStorage.accs);
-let c=cards[i];
-accs.forEach(a=>{
-if(a.buyer===c.user && !a.sold){
-a.sold=true;
-a.owner=c.user;
+function loadAdminCards(){
+ let c=JSON.parse(localStorage.cards||"[]"); adminCards.innerHTML="";
+ c.forEach((x,i)=>{
+  adminCards.innerHTML+=`<div class="acc"><b>${x.user}</b><br>${x.type} - ${x.value.toLocaleString()}đ<br>Mã:${x.code} | Seri:${x.seri}<br>Trạng thái: ${x.status}<br>${x.status==="Chờ duyệt"?`<button onclick="approveCard(${i})">✅ Duyệt & Cộng tiền</button>`:""}</div>`;
+ });
 }
-});
-cards[i].done=true;
-localStorage.cards=JSON.stringify(cards);
-localStorage.accs=JSON.stringify(accs);
-loadCards();
-alert("Đã duyệt giao dịch");
+function approveCard(i){
+ let cards=JSON.parse(localStorage.cards||"[]"); let wallets=JSON.parse(localStorage.wallets||"{}");
+ let card=cards[i]; if(card.status==="Đã duyệt") return;
+ if(wallets[card.user]==null) wallets[card.user]=0;
+ wallets[card.user]+=card.value; card.status="Đã duyệt";
+ localStorage.cards=JSON.stringify(cards); localStorage.wallets=JSON.stringify(wallets);
+ toast("Đã duyệt thẻ & cộng tiền"); loadAdminCards();
 }
-
-/* ACC CỦA TÔI */
+function addAcc(){
+ let a=JSON.parse(localStorage.accs||"[]");
+ a.push({name:accName.value,price:+accPrice.value,user:accUser.value,pass:accPass.value});
+ localStorage.accs=JSON.stringify(a); renderAcc();
+}
+function renderAcc(){
+ let a=JSON.parse(localStorage.accs||"[]"); accList.innerHTML="";
+ a.forEach((x,i)=>{ if(!x.owner) accList.innerHTML+=`<div class="acc"><b>${x.name}</b><p class="price">${x.price.toLocaleString()}đ</p><button class="buy" onclick="buyAcc(${i})">Mua</button></div>`;});
+}
+function buyAcc(i){
+ let a=JSON.parse(localStorage.accs||"[]"); let w=JSON.parse(localStorage.wallets||"{}");
+ if(w[currentUser]<a[i].price) return toast("Không đủ tiền");
+ w[currentUser]-=a[i].price; a[i].owner=currentUser;
+ let h=JSON.parse(localStorage.buyHistory||"[]");
+ h.push({user:currentUser,name:a[i].name,price:a[i].price,userAcc:a[i].user,passAcc:a[i].pass,time:new Date().toLocaleString()});
+ localStorage.buyHistory=JSON.stringify(h); localStorage.accs=JSON.stringify(a); localStorage.wallets=JSON.stringify(w);
+ $('balance').innerText="💰 "+w[currentUser].toLocaleString()+"đ";
+ renderAcc(); loadMyAcc(); loadBuyHistory();
+}
 function loadMyAcc(){
-let accs=JSON.parse(localStorage.accs||"[]");
-myAcc.innerHTML="";
-accs.forEach(a=>{
-if(a.owner===localStorage.currentUser){
-myAcc.innerHTML+=`
-<div class="acc">
-<p><b>${a.name}</b></p>
-<p>TK: ${a.user}</p>
-<p>MK: ${a.pass}</p>
-</div>`;
+ let a=JSON.parse(localStorage.accs||"[]"); myAcc.innerHTML="";
+ a.filter(x=>x.owner===currentUser).forEach(x=>{ myAcc.innerHTML+=`<div class="acc">${x.name}<br>TK:${x.user}<br>MK:${x.pass}</div>`;});
 }
-});
+function loadBuyHistory(){
+ let h=JSON.parse(localStorage.buyHistory||"[]"); buyHistory.innerHTML="";
+ h.filter(x=>x.user===currentUser).forEach(x=>{ buyHistory.innerHTML+=`<div class="acc">${x.time}<br>${x.name} - ${x.price.toLocaleString()}đ</div>`;});
 }
 
-/* AI CHAT */
-function addChat(sender,text){
-chatBox.innerHTML+=`<p><b>${sender}:</b> ${text}</p>`;
-chatBox.scrollTop=chatBox.scrollHeight;
-}
-addChat("AI","Xin chào 👋 Mình là AI hỗ trợ shop MTON. Bạn cần giúp gì?");
+/* ====== AI CHAT ====== */
+let chatTimer=null;
+function toggleChat(){ $('aiChat').classList.toggle('closed'); }
 function sendChat(){
-let msg=chatInput.value.toLowerCase();
-if(!msg) return;
-addChat("Bạn",chatInput.value);
-chatInput.value="";
-let r="Mình chưa hiểu 🤔 Bạn có thể inbox Facebook để được hỗ trợ nhanh hơn.";
-if(msg.includes("giá")) r="Giá acc hiển thị ngay dưới mỗi acc.";
-else if(msg.includes("mua")) r="Đăng nhập → chọn acc → nạp thẻ → đợi admin duyệt.";
-else if(msg.includes("nạp")) r="Bạn có thể nạp bằng thẻ cào hoặc quét QR.";
-else if(msg.includes("bao lâu")) r="Sau khi admin duyệt, acc sẽ hiện trong mục Acc của bạn.";
-else if(msg.includes("liên hệ")) r="Inbox Facebook: https://www.facebook.com/share/16sFRkuEd7/";
-setTimeout(()=>addChat("AI",r),500);
+ let msg=$('chatInput').value.trim(); if(!msg) return;
+ $('chatBox').innerHTML+=`<div class="user">👤 ${msg}</div>`; $('chatInput').value="";
+ clearTimeout(chatTimer); chatTimer=setTimeout(()=>{$('aiChat').classList.add('closed')},10000);
+ setTimeout(()=>aiReply(msg),300);
+}
+function aiReply(m){
+ m=m.toLowerCase();
+ let r="Mình chưa hiểu, bạn nói rõ hơn nhé!";
+ if(m.includes("nạp")) r="Vào mục 💳 Nạp thẻ, nhập đúng mã & seri. Shop duyệt thủ công.";
+ else if(m.includes("bao lâu")||m.includes("chờ")) r="Thẻ được duyệt sớm nhất có thể. Bạn chờ giúp shop nhé.";
+ else if(m.includes("số dư")) r="Số dư của bạn hiển thị ngay dưới tên đăng nhập.";
+ else if(m.includes("mua")) r="Nạp tiền xong, bấm Mua ở acc bạn thích.";
+ else if(m.includes("lỗi")||m.includes("sai")) r="Có vấn đề? Vui lòng liên hệ Facebook của shop để hỗ trợ.";
+ else if(m.includes("admin")) r="Thông tin quản trị được bảo mật để đảm bảo an toàn.";
+ $('chatBox').innerHTML+=`<div class="ai">🤖 ${r}</div>`;
+ $('chatBox').scrollTop=$('chatBox').scrollHeight;
 }
 
-if(localStorage.currentUser){
-username.value=localStorage.currentUser;
-login();
-}
+/* ====== AUTO LOGIN ====== */
+if(localStorage.currentUser){ $('username').value=localStorage.currentUser; login(); }
 </script>
-
 </body>
 </html>
