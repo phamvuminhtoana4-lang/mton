@@ -23,8 +23,15 @@ img{max-width:100%;border-radius:8px}
 .wait{background:#facc15;color:#000}
 .ok{background:#22c55e}
 .err{background:#ef4444}
+#aiBox{position:fixed;bottom:10px;right:10px;width:260px;background:#020617;border:1px solid #1e293b;border-radius:10px}
+#aiHead{padding:6px;background:#1e293b;cursor:pointer}
+#aiBody{padding:6px}
+.chat{height:180px;overflow:auto;border:1px solid #1e293b;padding:5px;margin-bottom:5px}
+.ai{color:#22c55e}
+.user{color:#fde047}
 </style>
 </head>
+
 <body>
 
 <header>
@@ -78,9 +85,16 @@ img{max-width:100%;border-radius:8px}
 <option value="500000">500.000</option>
 <option value="1000000">1.000.000</option>
 </select>
-<input id="seri" placeholder="Seri">
+<input id="seri" placeholder="Seri thẻ">
 <input id="mathe" placeholder="Mã thẻ">
 <button onclick="napThe()">Gửi thẻ</button>
+</div>
+
+<div class="card">
+<h3>Chuyển khoản</h3>
+<b>Viettel Money</b><br>
+STK: <b>9704229201718425041</b><br>
+Nội dung CK: <b id="ckNoiDung"></b>
 </div>
 </div>
 
@@ -100,8 +114,34 @@ img{max-width:100%;border-radius:8px}
 <h3>Duyệt mua acc</h3>
 <div id="adminBuy"></div>
 </div>
+
+<div class="card">
+<h3>Up acc</h3>
+<input id="aname" placeholder="Tên acc">
+<input id="auser" placeholder="TK acc">
+<input id="apass" placeholder="MK acc">
+<input id="aprice" placeholder="Giá">
+<textarea id="anote" placeholder="Ghi chú"></textarea>
+<select id="atype">
+<option value="vip">VIP</option>
+<option value="white">Trắng TT</option>
+</select>
+<input type="file" onchange="loadImg(event)">
+<img id="preview">
+<button onclick="addAcc()">Thêm acc</button>
+</div>
 </div>
 
+</div>
+
+<!-- AI -->
+<div id="aiBox">
+<div id="aiHead" onclick="toggleAI()">🤖 AI hỗ trợ</div>
+<div id="aiBody">
+<div id="chat" class="chat"></div>
+<input id="ask" placeholder="Hỏi AI..." onkeydown="if(event.key==='Enter')sendAI()">
+<button onclick="sendAI()">Gửi</button>
+</div>
 </div>
 
 <script>
@@ -110,7 +150,7 @@ let users=JSON.parse(localStorage.users||"{}");
 let accs=JSON.parse(localStorage.accs||"[]");
 let naps=JSON.parse(localStorage.naps||"[]");
 let buys=JSON.parse(localStorage.buys||"[]");
-let cur=null;
+let cur=null,img="";
 
 function toggle(){side.style.left=side.style.left=="0px"?"-260px":"0px"}
 function go(v){
@@ -143,13 +183,14 @@ function login(){
   return alert("Sai thông tin");
  cur=lUser.value;
  userBox.innerText=cur+" | "+users[cur].b+"đ";
+ ckNoiDung.innerText="NAP_"+cur;
  go("nap");
 }
 
 function logout(){location.reload()}
 
 function napThe(){
- naps.push({u:cur,mg:+menhgia.value,seri:seri.value,mathe:mathe.value,st:"Chờ"});
+ naps.push({u:cur,mg:+menhgia.value,seri,mathe,st:"Chờ"});
  localStorage.naps=JSON.stringify(naps);
  alert("Đã gửi thẻ");
 }
@@ -157,16 +198,20 @@ function napThe(){
 function renderNap(){
  hisNap.innerHTML="";
  naps.filter(n=>n.u==cur).forEach(n=>{
-  hisNap.innerHTML+=`<div class="card">${n.mg}đ - <span class="badge ${n.st=='Chờ'?'wait':n.st=='Duyệt'?'ok':'err'}">${n.st}</span></div>`;
+  hisNap.innerHTML+=`<div class="card">${n.mg}đ - ${n.st}</div>`;
  });
 }
 
 function renderShop(t){
  let box=document.getElementById(t);box.innerHTML="";
  accs.filter(a=>a.type==t).forEach((a,i)=>{
-  box.innerHTML+=`<div class="card">
-  <b>${a.name}</b><br>${a.price}đ<br>
-  <button onclick="buy(${i})">Mua</button></div>`;
+  box.innerHTML+=`
+  <div class="card">
+   <img src="${a.img}">
+   <b>${a.name}</b><br>${a.price}đ<br>
+   <span class="small">${a.note}</span><br>
+   <button onclick="buy(${i})">Mua</button>
+  </div>`;
  });
 }
 
@@ -180,8 +225,7 @@ function renderBuy(){
  hisBuy.innerHTML="";
  buys.filter(b=>b.u==cur).forEach(b=>{
   hisBuy.innerHTML+=`<div class="card">${b.acc.name} - ${b.st}
-  ${b.st=='Duyệt'?`<hr>TK:${b.acc.user}<br>MK:${b.acc.pass}`:''}
-  </div>`;
+  ${b.st=="Duyệt"?`<hr>TK:${b.acc.user}<br>MK:${b.acc.pass}`:""}</div>`;
  });
 }
 
@@ -189,15 +233,19 @@ function renderAdmin(){
  adminNap.innerHTML="";
  naps.forEach((n,i)=>{
   if(n.st!="Chờ")return;
-  adminNap.innerHTML+=`<div class="card">${n.u} - ${n.mg}đ
+  adminNap.innerHTML+=`
+  <div class="card">${n.u} - ${n.mg}đ
   <button onclick="duyetNap(${i})">Duyệt</button>
-  <button onclick="saiNap(${i})">Sai</button></div>`;
+  <button onclick="saiNap(${i})">Sai</button>
+  </div>`;
  });
  adminBuy.innerHTML="";
  buys.forEach((b,i)=>{
   if(b.st!="Chờ")return;
-  adminBuy.innerHTML+=`<div class="card">${b.u} mua ${b.acc.name}
-  <button onclick="duyetBuy(${i})">Duyệt</button></div>`;
+  adminBuy.innerHTML+=`
+  <div class="card">${b.u} mua ${b.acc.name}
+  <button onclick="duyetBuy(${i})">Duyệt</button>
+  </div>`;
  });
 }
 
@@ -207,7 +255,6 @@ function duyetNap(i){
  users[n.u].b+=n.mg;
  localStorage.users=JSON.stringify(users);
  localStorage.naps=JSON.stringify(naps);
- alert("Đã duyệt nạp");
  renderAdmin();
 }
 
@@ -226,8 +273,32 @@ function duyetBuy(i){
  localStorage.users=JSON.stringify(users);
  localStorage.accs=JSON.stringify(accs);
  localStorage.buys=JSON.stringify(buys);
- alert("Đã duyệt mua");
  renderAdmin();
+}
+
+function loadImg(e){
+ let r=new FileReader();
+ r.onload=()=>{img=r.result;preview.src=img};
+ r.readAsDataURL(e.target.files[0]);
+}
+function addAcc(){
+ accs.push({name:aname.value,user:auser.value,pass:apass.value,price:+aprice.value,note:anote.value,type:atype.value,img});
+ localStorage.accs=JSON.stringify(accs);
+ alert("Đã thêm acc");
+}
+
+function toggleAI(){
+ aiBody.style.display=aiBody.style.display=="none"?"block":"none";
+}
+function sendAI(){
+ if(!ask.value)return;
+ chat.innerHTML+=`<div class="user">Bạn: ${ask.value}</div>`;
+ let a="Bạn vui lòng liên hệ admin.";
+ if(ask.value.includes("mua"))a="Chọn acc → bấm mua → admin duyệt.";
+ if(ask.value.includes("nạp"))a="Vào mục nạp tiền để nạp.";
+ chat.innerHTML+=`<div class="ai">AI: ${a}</div>`;
+ ask.value="";
+ chat.scrollTop=9999;
 }
 </script>
 
