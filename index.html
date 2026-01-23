@@ -2,218 +2,205 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>MTON Shop Acc Roblox</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTON Shop Acc - Top Nạp</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-:root{
- --bg:#0b0b0b;--card:#1a1a1a;--card2:#222;--pri:#ff9800;--pri2:#ff5722;--ok:#4caf50;--info:#2196f3;
+body{
+ margin:0;font-family:Arial;
+ background:radial-gradient(circle at top,#1e293b,#020617);
+ color:#fff;overflow-x:hidden
 }
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial;background:var(--bg);color:#fff;overflow-x:hidden}
-header{background:linear-gradient(90deg,var(--pri),var(--pri2));padding:20px;text-align:center;position:relative}
-.section{max-width:980px;margin:auto;padding:15px}
-.box{background:var(--card);padding:15px;border-radius:14px;margin-bottom:15px}
-.acc{background:var(--card2);padding:12px;border-radius:12px;margin-bottom:10px}
-.price{color:var(--ok);font-weight:bold}
-button{padding:9px 14px;border:none;border-radius:10px;font-weight:bold;cursor:pointer}
-.buy{background:var(--ok);color:#fff}
-.admin-btn{background:var(--info);color:#fff}
-.hidden{display:none}
-input,select{width:100%;padding:9px;margin:6px 0;border-radius:8px;border:none}
-footer{text-align:center;color:#aaa;padding:20px}
+nav{
+ position:sticky;top:0;z-index:10;
+ background:rgba(2,6,23,.9);
+ display:flex;gap:8px;padding:10px
+}
+nav button{
+ background:#1e293b;color:#fff;
+ border:none;padding:8px 12px;
+ border-radius:6px;cursor:pointer
+}
+nav button:hover{background:#334155}
+section{display:none;padding:15px}
+.active{display:block}
+.card{
+ background:rgba(2,6,23,.9);
+ padding:12px;border-radius:12px;
+ margin-bottom:12px
+}
+input,select{width:100%;padding:8px;border-radius:6px;border:none;margin:5px 0}
+.btn{background:#fde047;color:#000;font-weight:bold;border:none;padding:8px;border-radius:6px}
+.rank1{color:#facc15;font-weight:bold}
+.rank2{color:#e5e7eb;font-weight:bold}
+.rank3{color:#fb7185;font-weight:bold}
 
-/* Toast */
-#toast{position:fixed;top:20px;right:20px;z-index:9999}
-.toast{background:#333;padding:10px 14px;border-radius:10px;margin-bottom:8px;opacity:.95}
-
-/* AI CHAT */
-#aiChat{position:fixed;bottom:20px;right:20px;width:320px;background:#141414;border-radius:14px;overflow:hidden;z-index:999}
-#aiHeader{background:var(--pri);padding:8px;display:flex;justify-content:space-between;align-items:center}
-#chatBox{height:220px;overflow-y:auto;padding:8px;font-size:14px}
-#aiChat.closed #chatBox,#aiChat.closed #chatInput,#aiChat.closed #sendBtn{display:none}
-#chatBox div{margin-bottom:6px}
-.ai{color:#4cafef}
-.user{color:#fff}
-
-/* TẾT EFFECT */
-.lantern{position:absolute;top:-40px;width:26px;height:36px;background:#e53935;border-radius:6px;box-shadow:0 0 10px #e53935;animation:float 6s linear infinite}
-@keyframes float{0%{transform:translateY(-20px)}100%{transform:translateY(120vh)}}
-.fire{position:fixed;pointer-events:none;width:6px;height:6px;border-radius:50%;animation:boom 1s ease-out forwards}
-@keyframes boom{to{transform:translateY(-120px) scale(0);opacity:0}}
+/* Hoa đào */
+.flower{
+ position:fixed;top:-10px;width:16px;height:16px;
+ background:pink;border-radius:50%;
+ box-shadow:-8px 0 pink,8px 0 pink,0 -8px pink,0 8px pink;
+ animation:fall linear infinite;opacity:.7
+}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
 </style>
 </head>
-
 <body>
 
-<header>
-<h1>🎉 MTON SHOP ACC ROBLOX 🎉</h1>
-<p>Giao dịch thủ công – an toàn – minh bạch</p>
-</header>
+<nav>
+<button onclick="show('home')">🏠 Trang chính</button>
+<button onclick="show('shop')">🛒 Shop</button>
+<button onclick="show('top')">🔥 Top nạp</button>
+<button onclick="show('history')">📜 Lịch sử</button>
+<button onclick="show('admin')">🔐 Admin</button>
+</nav>
 
-<div class="section box">
-<h2>👤 Khách hàng</h2>
-<input id="username" placeholder="Tên đăng nhập">
-<button class="buy" onclick="login()">Đăng nhập</button>
+<!-- HOME -->
+<section id="home" class="active">
+<div class="card">
+<h3>Đăng nhập</h3>
+<input id="user" placeholder="Tên đăng nhập">
+<button class="btn" onclick="login()">Vào shop</button>
 <p id="hello"></p>
-<p id="balance"></p>
+<p>Số dư: <b id="bal">0</b>đ</p>
 </div>
 
-<div class="section box">
-<h2>🎮 Acc đang bán</h2>
-<div id="accList"></div>
-</div>
-
-<div class="section box">
-<h2>💳 Nạp thẻ</h2>
-<select id="cardType"><option>Viettel</option><option>Mobifone</option><option>Vinaphone</option></select>
-<select id="cardValue">
-<option value="10000">10.000đ</option><option value="20000">20.000đ</option>
-<option value="50000">50.000đ</option><option value="100000">100.000đ</option>
-<option value="200000">200.000đ</option><option value="500000">500.000đ</option>
+<div class="card">
+<h3>Nạp thẻ</h3>
+<select id="cardVal">
+<option value="10000">10.000</option>
+<option value="50000">50.000</option>
+<option value="100000">100.000</option>
+<option value="200000">200.000</option>
+<option value="500000">500.000</option>
 </select>
 <input id="cardCode" placeholder="Mã thẻ">
 <input id="cardSeri" placeholder="Seri">
-<button class="buy" onclick="sendCard()">Gửi thẻ</button>
+<button class="btn" onclick="sendCard()">Gửi thẻ</button>
+<p style="font-size:13px;color:#cbd5f5">Chờ admin duyệt</p>
 </div>
+</section>
 
-<div class="section box"><h2>📜 Lịch sử nạp thẻ</h2><div id="cardHistory"></div></div>
-<div class="section box"><h2>📦 Lịch sử mua acc</h2><div id="buyHistory"></div></div>
-<div class="section box"><h2>🔓 Acc đã mua</h2><div id="myAcc"></div></div>
+<!-- SHOP -->
+<section id="shop">
+<div class="card">
+<h3>Shop Acc</h3>
+<div id="accList"></div>
+</div>
+</section>
 
-<div class="section box">
-<button class="admin-btn" onclick="adminLogin()">🔐 Admin</button>
-<div id="adminPanel" class="hidden">
-<h3>➕ Thêm acc</h3>
-<input id="accName" placeholder="Tên acc">
-<input id="accPrice" placeholder="Giá">
-<input id="accUser" placeholder="TK acc">
-<input id="accPass" placeholder="MK acc">
-<button class="admin-btn" onclick="addAcc()">Thêm acc</button>
-<hr>
-<h3>📥 Thẻ khách nạp</h3>
+<!-- TOP -->
+<section id="top">
+<div class="card">
+<h3>🔥 TOP NẠP THÁNG</h3>
+<div id="topList"></div>
+</div>
+</section>
+
+<!-- HISTORY -->
+<section id="history">
+<div class="card">
+<h3>Lịch sử nạp</h3>
+<div id="hisCard"></div>
+</div>
+</section>
+
+<!-- ADMIN -->
+<section id="admin">
+<div class="card">
+<h3>Admin</h3>
+<input type="password" id="adminPass" placeholder="Mật khẩu admin">
+<button class="btn" onclick="adminLogin()">Đăng nhập</button>
+</div>
+<div id="adminPanel" style="display:none">
+<div class="card">
+<h4>Duyệt thẻ</h4>
 <div id="adminCards"></div>
 </div>
 </div>
-
-<footer>© 2026 MTON Shop</footer>
-
-<!-- Toast -->
-<div id="toast"></div>
-
-<!-- AI CHAT -->
-<div id="aiChat">
- <div id="aiHeader"><b>🤖 AI MTON</b><button onclick="toggleChat()">➖</button></div>
- <div id="chatBox"></div>
- <input id="chatInput" placeholder="Hỏi gì đó..." onkeydown="if(event.key==='Enter')sendChat()">
- <button id="sendBtn" class="buy" onclick="sendChat()">Gửi</button>
-</div>
+</section>
 
 <script>
-/* ====== CONFIG ====== */
 const ADMIN_PASS="Pvmt207#";
+let u="";
+let bal=JSON.parse(localStorage.bal||"{}");
+let cards=JSON.parse(localStorage.cards||"[]");
+let topNap=JSON.parse(localStorage.topNap||"{}");
 
-/* ====== UTIL ====== */
-const $=id=>document.getElementById(id);
-function toast(msg){$('toast').innerHTML+=`<div class="toast">${msg}</div>`;setTimeout(()=>{$('toast').firstChild?.remove()},2500)}
+function show(id){
+ document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+ document.getElementById(id).classList.add("active");
+ if(id==="top")renderTop();
+}
 
-/* ====== TẾT EFFECT ====== */
-for(let i=0;i<6;i++){let l=document.createElement('div');l.className='lantern';l.style.left=Math.random()*100+'%';l.style.animationDelay=(Math.random()*6)+'s';document.body.appendChild(l)}
-setInterval(()=>{let f=document.createElement('div');f.className='fire';f.style.left=Math.random()*100+'%';f.style.bottom='0';f.style.background=`hsl(${Math.random()*360},80%,60%)`;document.body.appendChild(f);setTimeout(()=>f.remove(),900)},1200)
-
-/* ====== SHOP LOGIC ====== */
-let currentUser="";
 function login(){
- currentUser=$('username').value.trim(); if(!currentUser)return;
- localStorage.currentUser=currentUser;
- let w=JSON.parse(localStorage.wallets||"{}"); if(w[currentUser]==null)w[currentUser]=0;
- localStorage.wallets=JSON.stringify(w);
- $('hello').innerText="Xin chào "+currentUser;
- $('balance').innerText="💰 "+w[currentUser].toLocaleString()+"đ";
- renderAcc(); loadMyAcc(); loadCardHistory(); loadBuyHistory();
+ u=user.value;
+ bal[u]=bal[u]||0;
+ localStorage.bal=JSON.stringify(bal);
+ hello.innerText="Xin chào "+u;
+ balUI();
 }
+
+function balUI(){bal.innerText=bal[u]||0}
+
 function sendCard(){
- let cards=JSON.parse(localStorage.cards||"[]");
- cards.push({user:currentUser,type:cardType.value,value:+cardValue.value,code:cardCode.value,seri:cardSeri.value,status:"Chờ duyệt",time:new Date().toLocaleString()});
+ cards.push({u,val:+cardVal.value,code:cardCode.value,seri:cardSeri.value,ok:false});
  localStorage.cards=JSON.stringify(cards);
- cardCode.value=""; cardSeri.value="";
- toast("Đã gửi thẻ, chờ duyệt!");
- loadCardHistory();
+ alert("Đã gửi thẻ");
 }
-function loadCardHistory(){
- let c=JSON.parse(localStorage.cards||"[]"); cardHistory.innerHTML="";
- c.filter(x=>x.user===currentUser).forEach(x=>{
-  cardHistory.innerHTML+=`<div class="acc">${x.time}<br>${x.type} - ${x.value.toLocaleString()}đ<br>Trạng thái: ${x.status}</div>`;
- });
-}
+
 function adminLogin(){
- if(prompt("Mật khẩu admin:")===ADMIN_PASS){ adminPanel.classList.remove("hidden"); loadAdminCards(); }
+ if(adminPass.value===ADMIN_PASS){
+  adminPanel.style.display="block";
+  renderAdmin();
+ }
 }
-function loadAdminCards(){
- let c=JSON.parse(localStorage.cards||"[]"); adminCards.innerHTML="";
- c.forEach((x,i)=>{
-  adminCards.innerHTML+=`<div class="acc"><b>${x.user}</b><br>${x.type} - ${x.value.toLocaleString()}đ<br>Mã:${x.code} | Seri:${x.seri}<br>Trạng thái: ${x.status}<br>${x.status==="Chờ duyệt"?`<button onclick="approveCard(${i})">✅ Duyệt & Cộng tiền</button>`:""}</div>`;
+
+function renderAdmin(){
+ adminCards.innerHTML="";
+ cards.forEach((c,i)=>{
+  if(!c.ok){
+   adminCards.innerHTML+=`
+   <div class="card">
+    ${c.u} - ${c.val}đ
+    <button class="btn" onclick="approve(${i})">Duyệt</button>
+   </div>`;
+  }
  });
 }
-function approveCard(i){
- let cards=JSON.parse(localStorage.cards||"[]"); let wallets=JSON.parse(localStorage.wallets||"{}");
- let card=cards[i]; if(card.status==="Đã duyệt") return;
- if(wallets[card.user]==null) wallets[card.user]=0;
- wallets[card.user]+=card.value; card.status="Đã duyệt";
- localStorage.cards=JSON.stringify(cards); localStorage.wallets=JSON.stringify(wallets);
- toast("Đã duyệt thẻ & cộng tiền"); loadAdminCards();
-}
-function addAcc(){
- let a=JSON.parse(localStorage.accs||"[]");
- a.push({name:accName.value,price:+accPrice.value,user:accUser.value,pass:accPass.value});
- localStorage.accs=JSON.stringify(a); renderAcc();
-}
-function renderAcc(){
- let a=JSON.parse(localStorage.accs||"[]"); accList.innerHTML="";
- a.forEach((x,i)=>{ if(!x.owner) accList.innerHTML+=`<div class="acc"><b>${x.name}</b><p class="price">${x.price.toLocaleString()}đ</p><button class="buy" onclick="buyAcc(${i})">Mua</button></div>`;});
-}
-function buyAcc(i){
- let a=JSON.parse(localStorage.accs||"[]"); let w=JSON.parse(localStorage.wallets||"{}");
- if(w[currentUser]<a[i].price) return toast("Không đủ tiền");
- w[currentUser]-=a[i].price; a[i].owner=currentUser;
- let h=JSON.parse(localStorage.buyHistory||"[]");
- h.push({user:currentUser,name:a[i].name,price:a[i].price,userAcc:a[i].user,passAcc:a[i].pass,time:new Date().toLocaleString()});
- localStorage.buyHistory=JSON.stringify(h); localStorage.accs=JSON.stringify(a); localStorage.wallets=JSON.stringify(w);
- $('balance').innerText="💰 "+w[currentUser].toLocaleString()+"đ";
- renderAcc(); loadMyAcc(); loadBuyHistory();
-}
-function loadMyAcc(){
- let a=JSON.parse(localStorage.accs||"[]"); myAcc.innerHTML="";
- a.filter(x=>x.owner===currentUser).forEach(x=>{ myAcc.innerHTML+=`<div class="acc">${x.name}<br>TK:${x.user}<br>MK:${x.pass}</div>`;});
-}
-function loadBuyHistory(){
- let h=JSON.parse(localStorage.buyHistory||"[]"); buyHistory.innerHTML="";
- h.filter(x=>x.user===currentUser).forEach(x=>{ buyHistory.innerHTML+=`<div class="acc">${x.time}<br>${x.name} - ${x.price.toLocaleString()}đ</div>`;});
+
+function approve(i){
+ cards[i].ok=true;
+ bal[cards[i].u]=(bal[cards[i].u]||0)+cards[i].val;
+
+ topNap[cards[i].u]=(topNap[cards[i].u]||0)+cards[i].val;
+
+ localStorage.bal=JSON.stringify(bal);
+ localStorage.cards=JSON.stringify(cards);
+ localStorage.topNap=JSON.stringify(topNap);
+ renderAdmin();
 }
 
-/* ====== AI CHAT ====== */
-let chatTimer=null;
-function toggleChat(){ $('aiChat').classList.toggle('closed'); }
-function sendChat(){
- let msg=$('chatInput').value.trim(); if(!msg) return;
- $('chatBox').innerHTML+=`<div class="user">👤 ${msg}</div>`; $('chatInput').value="";
- clearTimeout(chatTimer); chatTimer=setTimeout(()=>{$('aiChat').classList.add('closed')},10000);
- setTimeout(()=>aiReply(msg),300);
-}
-function aiReply(m){
- m=m.toLowerCase();
- let r="Mình chưa hiểu, bạn nói rõ hơn nhé!";
- if(m.includes("nạp")) r="Vào mục 💳 Nạp thẻ, nhập đúng mã & seri. Shop duyệt thủ công.";
- else if(m.includes("bao lâu")||m.includes("chờ")) r="Thẻ được duyệt sớm nhất có thể. Bạn chờ giúp shop nhé.";
- else if(m.includes("số dư")) r="Số dư của bạn hiển thị ngay dưới tên đăng nhập.";
- else if(m.includes("mua")) r="Nạp tiền xong, bấm Mua ở acc bạn thích.";
- else if(m.includes("lỗi")||m.includes("sai")) r="Có vấn đề? Vui lòng liên hệ Facebook của shop để hỗ trợ.";
- else if(m.includes("admin")) r="Thông tin quản trị được bảo mật để đảm bảo an toàn.";
- $('chatBox').innerHTML+=`<div class="ai">🤖 ${r}</div>`;
- $('chatBox').scrollTop=$('chatBox').scrollHeight;
+function renderTop(){
+ let arr=Object.entries(topNap).sort((a,b)=>b[1]-a[1]).slice(0,10);
+ topList.innerHTML="";
+ arr.forEach((e,i)=>{
+  let cls=i==0?"rank1":i==1?"rank2":i==2?"rank3":"";
+  let icon=i==0?"🥇":i==1?"🥈":i==2?"🥉":"#"+(i+1);
+  topList.innerHTML+=`
+   <div class="card ${cls}">
+    ${icon} ${e[0]} - ${e[1].toLocaleString()}đ
+   </div>`;
+ });
 }
 
-/* ====== AUTO LOGIN ====== */
-if(localStorage.currentUser){ $('username').value=localStorage.currentUser; login(); }
+/* Hoa đào */
+for(let i=0;i<20;i++){
+ let f=document.createElement("div");
+ f.className="flower";
+ f.style.left=Math.random()*100+"vw";
+ f.style.animationDuration=8+Math.random()*6+"s";
+ document.body.appendChild(f);
+}
 </script>
 </body>
 </html>
