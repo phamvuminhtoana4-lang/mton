@@ -10,14 +10,15 @@ body{margin:0;font-family:Arial;background:#020617;color:#fff}
 header{background:#020617;padding:10px;display:flex;justify-content:space-between;align-items:center}
 #menuBtn{font-size:22px;cursor:pointer}
 #userInfo{font-size:14px}
-#side{position:fixed;left:-260px;top:0;width:250px;height:100%;background:#020617;padding:15px;transition:.3s}
+#side{position:fixed;left:-260px;top:0;width:250px;height:100%;background:#020617;padding:15px;transition:.3s;z-index:10}
 #side a{display:block;padding:10px;border-bottom:1px solid #1e293b;cursor:pointer}
-#overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none}
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;z-index:9}
 .container{padding:15px}
 .card{background:#020617;padding:15px;border-radius:12px;margin-bottom:15px}
 input,select{width:100%;padding:8px;margin:6px 0;border-radius:6px;border:none}
 button{padding:8px;border:none;border-radius:6px;background:#fde047;font-weight:bold;cursor:pointer}
-.view{display:none}.active{display:block}
+.view{display:none}
+.view.active{display:block}
 .small{font-size:13px;color:#cbd5f5}
 </style>
 </head>
@@ -25,29 +26,28 @@ button{padding:8px;border:none;border-radius:6px;background:#fde047;font-weight:
 <body>
 
 <header>
-<span id="menuBtn" onclick="toggle()">☰</span>
+<span id="menuBtn" onclick="openMenu()">☰</span>
 <b>SHOP ACC TOÀN</b>
 <div id="userInfo">Chưa đăng nhập</div>
 </header>
 
 <div id="side">
-<a onclick="openView('home')">🏠 Trang chính</a>
-<a onclick="openView('nap')">💳 Nạp tiền</a>
-<a onclick="openView('shop')">🛒 Shop acc</a>
-<a onclick="openView('hisNap')">📜 Lịch sử nạp</a>
-<a onclick="openView('hisBuy')">🎮 Lịch sử mua acc</a>
-<a id="adminLink" onclick="openView('admin')" style="display:none">👑 Quản trị</a>
+<a onclick="go('home')">🏠 Trang chính</a>
+<a onclick="go('nap')">💳 Nạp tiền</a>
+<a onclick="go('shop')">🛒 Shop acc</a>
+<a onclick="go('hisNap')">📜 Lịch sử nạp</a>
+<a onclick="go('hisBuy')">🎮 Lịch sử mua acc</a>
+<a id="adminLink" onclick="go('admin')" style="display:none">👑 Quản trị</a>
 <a onclick="logout()">🚪 Đăng xuất</a>
 </div>
-<div id="overlay" onclick="toggle()"></div>
+<div id="overlay" onclick="closeMenu()"></div>
 
 <div class="container">
 
-<!-- HOME -->
 <div id="home" class="view active">
 <div class="card">
 <h2>Chào mừng bạn đến với shop của Toàn</h2>
-<p class="small">Đăng ký hoặc đăng nhập để sử dụng dịch vụ</p>
+<p class="small">Vui lòng đăng nhập để sử dụng dịch vụ</p>
 </div>
 
 <div class="card">
@@ -66,53 +66,38 @@ button{padding:8px;border:none;border-radius:6px;background:#fde047;font-weight:
 </div>
 </div>
 
-<!-- NẠP -->
 <div id="nap" class="view">
 <div class="card">
-<h3>Nạp thẻ cào</h3>
+<h3>Nạp thẻ</h3>
 <select id="cardVal">
-<option value="10000">10.000</option>
-<option value="50000">50.000</option>
-<option value="100000">100.000</option>
-<option value="200000">200.000</option>
-<option value="500000">500.000</option>
+<option>10000</option>
+<option>50000</option>
+<option>100000</option>
+<option>200000</option>
+<option>500000</option>
 </select>
 <input id="cardCode" placeholder="Mã thẻ">
 <input id="cardSeri" placeholder="Seri">
 <button onclick="sendCard()">Gửi thẻ</button>
 </div>
-
-<div class="card">
-<h3>Chuyển khoản</h3>
-<p class="small">Viettel Money: 9704229201718425041</p>
-<input id="ckNote" placeholder="Nội dung chuyển khoản">
-<button onclick="sendBank()">Gửi xác nhận</button>
-</div>
 </div>
 
-<!-- SHOP -->
 <div id="shop" class="view">
 <div id="accList"></div>
 </div>
 
-<!-- HISTORY -->
-<div id="hisNap" class="view"><div class="card"><h3>Lịch sử nạp</h3><div id="hn"></div></div></div>
-<div id="hisBuy" class="view"><div class="card"><h3>Lịch sử mua acc</h3><div id="hb"></div></div></div>
+<div id="hisNap" class="view">
+<div class="card"><h3>Lịch sử nạp</h3><div id="hn"></div></div>
+</div>
 
-<!-- ADMIN -->
+<div id="hisBuy" class="view">
+<div class="card"><h3>Lịch sử mua acc</h3><div id="hb"></div></div>
+</div>
+
 <div id="admin" class="view">
 <div class="card">
 <h3>Giao dịch chờ duyệt</h3>
 <div id="adminPending"></div>
-</div>
-
-<div class="card">
-<h3>Thêm acc</h3>
-<input id="accName" placeholder="Tên acc">
-<input id="accUser" placeholder="TK acc">
-<input id="accPass" placeholder="MK acc">
-<input id="accPrice" placeholder="Giá">
-<button onclick="addAcc()">Thêm acc</button>
 </div>
 </div>
 
@@ -123,61 +108,76 @@ const ADMIN_USER="admin",ADMIN_PASS="Pvmt207#";
 let users=JSON.parse(localStorage.users||"{}");
 let accs=JSON.parse(localStorage.accs||"[]");
 let pending=JSON.parse(localStorage.pending||"[]");
-let cur="",isAdmin=false;
+let cur=null,isAdmin=false;
 
-function toggle(){
- side.style.left=side.style.left=="0px"?"-260px":"0px";
- overlay.style.display=side.style.left=="0px"?"block":"none";
+function openMenu(){
+ side.style.left="0px";
+ overlay.style.display="block";
 }
-function openView(id){
+function closeMenu(){
+ side.style.left="-260px";
+ overlay.style.display="none";
+}
+
+function go(id){
+ if(id!=="home" && !cur){
+  alert("Vui lòng đăng nhập");
+  closeMenu();
+  return;
+ }
  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
- document.getElementById(id).classList.add('active');toggle();
- if(id=="shop")renderShop();
- if(id=="admin")renderAdmin();
- if(id=="hisNap")renderHistory();
- if(id=="hisBuy")renderBuy();
+ document.getElementById(id).classList.add('active');
+ if(id==="shop")renderShop();
+ if(id==="hisNap")renderNap();
+ if(id==="hisBuy")renderBuy();
+ if(id==="admin")renderAdmin();
+ closeMenu();
 }
+
 function register(){
  if(rp.value!==rp2.value||!ru.value)return alert("Sai thông tin");
- if(users[ru.value])return alert("Tồn tại");
+ if(users[ru.value])return alert("Đã tồn tại");
  users[ru.value]={pass:rp.value,balance:0,nap:[],buy:[]};
  localStorage.users=JSON.stringify(users);
  alert("Đăng ký thành công");
 }
+
 function login(){
  let u=lu.value,p=lp.value;
- if(u===ADMIN_USER&&p===ADMIN_PASS){
-  isAdmin=true;cur="ADMIN";adminLink.style.display="block";
-  userInfo.innerText="👑 ADMIN";openView('admin');return;
+ if(u===ADMIN_USER && p===ADMIN_PASS){
+  cur="ADMIN";isAdmin=true;
+  adminLink.style.display="block";
+  userInfo.innerText="👑 ADMIN";
+  go("admin");return;
  }
  if(!users[u]||users[u].pass!==p)return alert("Sai thông tin");
- cur=u;userInfo.innerText=`👤 ${cur} | 💰 ${users[cur].balance}đ`;
- openView('nap');
+ cur=u;
+ userInfo.innerText=`👤 ${cur} | 💰 ${users[cur].balance}đ`;
+ go("nap");
 }
+
 function logout(){location.reload();}
+
 function sendCard(){
- pending.push({user:cur,type:"Thẻ",info:cardCode.value});
+ pending.push({user:cur,info:cardCode.value});
  localStorage.pending=JSON.stringify(pending);
- alert("Đã gửi, chờ admin");
+ alert("Đã gửi thẻ, chờ admin duyệt");
 }
-function sendBank(){
- pending.push({user:cur,type:"CK",info:ckNote.value});
- localStorage.pending=JSON.stringify(pending);
- alert("Đã gửi xác nhận");
-}
+
 function renderAdmin(){
  adminPending.innerHTML="";
  pending.forEach((p,i)=>{
   adminPending.innerHTML+=`
   <div class="card">
-  <b>${p.user}</b> - ${p.type}<br>${p.info}
-  <input id="add${i}" placeholder="Tiền cộng">
+  <b>${p.user}</b><br>${p.info}
+  <input id="m${i}" placeholder="Tiền cộng">
   <button onclick="approve(${i})">Duyệt</button>
   </div>`;
  });
 }
+
 function approve(i){
- let add=Number(document.getElementById("add"+i).value);
+ let add=Number(document.getElementById("m"+i).value);
  users[pending[i].user].balance+=add;
  users[pending[i].user].nap.push("+"+add);
  pending.splice(i,1);
@@ -185,37 +185,31 @@ function approve(i){
  localStorage.pending=JSON.stringify(pending);
  renderAdmin();
 }
-function addAcc(){
- accs.push({name:accName.value,user:accUser.value,pass:accPass.value,price:Number(accPrice.value)});
- localStorage.accs=JSON.stringify(accs);
- alert("Đã thêm acc");
-}
+
 function renderShop(){
  accList.innerHTML="";
  accs.forEach((a,i)=>{
   accList.innerHTML+=`
   <div class="card">
-  <b>${a.name}</b><br>Giá: ${a.price}đ<br>
+  <b>${a.name}</b><br>${a.price}đ
   <button onclick="buy(${i})">Mua</button>
   </div>`;
  });
 }
+
 function buy(i){
  let a=accs[i];
  if(users[cur].balance<a.price)return alert("Không đủ tiền");
  users[cur].balance-=a.price;
- users[cur].buy.push(`${a.name} | TK:${a.user} | MK:${a.pass}`);
+ users[cur].buy.push(`${a.name} | ${a.user} | ${a.pass}`);
  accs.splice(i,1);
  localStorage.users=JSON.stringify(users);
  localStorage.accs=JSON.stringify(accs);
  alert("Mua thành công");
 }
-function renderHistory(){
- hn.innerHTML=users[cur].nap.map(n=>"<p>"+n+"</p>").join("");
-}
-function renderBuy(){
- hb.innerHTML=users[cur].buy.map(b=>"<p>"+b+"</p>").join("");
-}
+
+function renderNap(){hn.innerHTML=users[cur].nap.map(n=>"<p>"+n+"</p>").join("");}
+function renderBuy(){hb.innerHTML=users[cur].buy.map(b=>"<p>"+b+"</p>").join("");}
 </script>
 
 </body>
