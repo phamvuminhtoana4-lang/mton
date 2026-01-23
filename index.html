@@ -18,9 +18,7 @@ header {
   justify-content:space-between;
   align-items:center;
 }
-button {
-  cursor:pointer;
-}
+button { cursor:pointer; }
 .container { padding:15px; }
 .hidden { display:none; }
 .acc {
@@ -98,13 +96,16 @@ button {
 
 <div class="container">
 
-<!-- HOME -->
 <div id="home">
   <h2>Chào mừng bạn đến với shop của Toàn</h2>
   <p>Shop acc Roblox uy tín – demo frontend.</p>
+  <p>📌 Facebook admin: 
+    <a href="https://www.facebook.com/share/1DVxeshD6L/" target="_blank">
+      Nhấn vào đây
+    </a>
+  </p>
 </div>
 
-<!-- LOGIN -->
 <div id="login">
   <h3>Đăng nhập</h3>
   <input id="loginUser" placeholder="Tên tài khoản"><br><br>
@@ -113,7 +114,6 @@ button {
   <p><a href="#" onclick="showPage('register')">Đăng ký</a></p>
 </div>
 
-<!-- REGISTER -->
 <div id="register" class="hidden">
   <h3>Đăng ký</h3>
   <input id="regUser" placeholder="Tên tài khoản"><br><br>
@@ -122,12 +122,12 @@ button {
   <button onclick="register()">Đăng ký</button>
 </div>
 
-<!-- NAP -->
 <div id="nap" class="hidden">
   <h3>Nạp thẻ cào</h3>
   <select id="cardValue">
     <option>10k</option><option>20k</option><option>50k</option>
-    <option>100k</option><option>200k</option><option>500k</option><option>1tr</option>
+    <option>100k</option><option>200k</option>
+    <option>500k</option><option>1tr</option>
   </select><br><br>
   <input id="seri" placeholder="Seri"><br><br>
   <input id="code" placeholder="Mã thẻ"><br><br>
@@ -138,24 +138,35 @@ button {
   <p>Nội dung CK: <b>MTON_{{USERNAME}}</b></p>
 </div>
 
-<!-- VIP -->
-<div id="vip" class="hidden"><h3>Acc VIP</h3><div id="vipList"></div></div>
+<div id="vip" class="hidden">
+  <h3>Acc VIP</h3>
+  <div id="vipList"></div>
+</div>
 
-<!-- WHITE -->
-<div id="white" class="hidden"><h3>Acc Trắng Thông Tin</h3><div id="whiteList"></div></div>
+<div id="white" class="hidden">
+  <h3>Acc Trắng Thông Tin</h3>
+  <div id="whiteList"></div>
+</div>
 
-<!-- HISTORY -->
-<div id="historyNap" class="hidden"></div>
-<div id="historyBuy" class="hidden"></div>
+<div id="historyNap" class="hidden">
+  <h3>Lịch sử nạp</h3>
+  <p>Trạng thái: Chờ duyệt / Sai mã / Thành công</p>
+</div>
 
-<!-- ADMIN -->
+<div id="historyBuy" class="hidden">
+  <h3>Lịch sử mua</h3>
+  <p>Giao dịch thành công sẽ hiển thị tài khoản & mật khẩu</p>
+</div>
+
 <div id="admin" class="hidden">
   <h3>Admin Panel</h3>
+
   <h4>Up acc</h4>
   <select id="accType">
     <option value="vip">VIP</option>
     <option value="white">Trắng</option>
   </select><br><br>
+
   <input id="accName" placeholder="Tên acc"><br><br>
   <input id="accPrice" placeholder="Giá"><br><br>
   <input id="accNote" placeholder="Ghi chú"><br><br>
@@ -166,11 +177,17 @@ button {
 
   <h4>Duyệt nạp thẻ</h4>
   <div id="adminNap"></div>
+
+  <h4>Quản lý acc đã đăng</h4>
+  <b>Acc VIP</b>
+  <div id="adminVipList"></div>
+
+  <b>Acc Trắng Thông Tin</b>
+  <div id="adminWhiteList"></div>
 </div>
 
 </div>
 
-<!-- AI -->
 <div class="ai-box">
   <div class="ai-header">AI hỗ trợ</div>
   <div class="ai-body" id="aiBody"></div>
@@ -180,16 +197,25 @@ button {
 <script>
 let currentUser = null;
 
-function toggleMenu(){document.getElementById("menu").classList.toggle("show");}
+function toggleMenu(){
+  document.getElementById("menu").classList.toggle("show");
+}
 
 function showPage(id){
-  document.querySelectorAll(".container > div").forEach(d=>d.classList.add("hidden"));
+  document.querySelectorAll(".container > div")
+    .forEach(d=>d.classList.add("hidden"));
   document.getElementById(id).classList.remove("hidden");
+  if(id==="admin") renderAdminAcc();
 }
 
 function register(){
-  if(regPass.value!==regPass2.value){alert("Mật khẩu không khớp");return;}
-  localStorage.setItem("user_"+regUser.value,JSON.stringify({pass:regPass.value,money:0}));
+  if(regPass.value!==regPass2.value){
+    alert("Mật khẩu không khớp");return;
+  }
+  localStorage.setItem(
+    "user_"+regUser.value,
+    JSON.stringify({pass:regPass.value,money:0})
+  );
   alert("Đăng ký thành công");
   showPage("login");
 }
@@ -197,18 +223,28 @@ function register(){
 function login(){
   let u=loginUser.value,p=loginPass.value;
   let data=localStorage.getItem("user_"+u);
-  if(u==="admin" && p==="Pvmt207#"){currentUser={user:"admin",money:0,admin:true};}
+
+  if(u==="admin" && p==="Pvmt207#"){
+    currentUser={user:"admin",money:0,admin:true};
+  }
   else if(data && JSON.parse(data).pass===p){
     let d=JSON.parse(data);
     currentUser={user:u,money:d.money,admin:false};
-  } else {alert("Sai thông tin");return;}
+  } else {
+    alert("Sai thông tin");return;
+  }
+
   userInfo.innerText=currentUser.user;
   userMoney.innerText=" | "+currentUser.money+"đ";
-  if(currentUser.admin) adminMenu.classList.remove("hidden");
+
+  if(currentUser.admin)
+    adminMenu.classList.remove("hidden");
+
   showPage("home");
+  renderAll();
 }
 
-function logout(){location.reload();}
+function logout(){ location.reload(); }
 
 function addAcc(){
   let list=JSON.parse(localStorage.getItem(accType.value))||[];
@@ -223,6 +259,7 @@ function addAcc(){
   });
   localStorage.setItem(accType.value,JSON.stringify(list));
   alert("Đã thêm acc");
+  renderAll();
 }
 
 function renderAcc(type,el){
@@ -236,7 +273,8 @@ function renderAcc(type,el){
       <p>${a.note}</p>
       <p>Giá: ${a.price}</p>
       <button onclick="buyAcc('${type}',${a.id})">Mua</button>
-      ${currentUser&&currentUser.admin?`<button onclick="removeAcc('${type}',${a.id})">❌ Xóa</button>`:""}
+      ${currentUser&&currentUser.admin?
+        `<button onclick="removeAcc('${type}',${a.id})">❌ Xóa</button>`:""}
     </div>`;
   });
 }
@@ -250,6 +288,7 @@ function removeAcc(type,id){
   list=list.filter(a=>a.id!==id);
   localStorage.setItem(type,JSON.stringify(list));
   renderAll();
+  renderAdminAcc();
 }
 
 function renderAll(){
@@ -259,7 +298,35 @@ function renderAll(){
   }
 }
 
-function napThe(){alert("Thẻ đã gửi – chờ admin duyệt");}
+function renderAdminAcc(){
+  if(!currentUser || !currentUser.admin) return;
+
+  let vip=JSON.parse(localStorage.getItem("vip"))||[];
+  let white=JSON.parse(localStorage.getItem("white"))||[];
+
+  adminVipList.innerHTML="";
+  adminWhiteList.innerHTML="";
+
+  vip.forEach(a=>{
+    adminVipList.innerHTML+=`
+    <div class="acc">
+      <b>${a.name}</b> - ${a.price}<br>
+      <button onclick="removeAcc('vip',${a.id})">❌ Xóa acc VIP</button>
+    </div>`;
+  });
+
+  white.forEach(a=>{
+    adminWhiteList.innerHTML+=`
+    <div class="acc">
+      <b>${a.name}</b> - ${a.price}<br>
+      <button onclick="removeAcc('white',${a.id})">❌ Xóa acc Trắng</button>
+    </div>`;
+  });
+}
+
+function napThe(){
+  alert("Thẻ đã gửi – chờ admin duyệt");
+}
 
 function aiChat(e){
   if(e.key==="Enter"){
