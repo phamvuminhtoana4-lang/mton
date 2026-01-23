@@ -11,21 +11,20 @@ body{
  color:#fff
 }
 header{
- background:rgba(2,6,23,.9);
+ background:rgba(2,6,23,.95);
  padding:12px 15px;
  display:flex;
  justify-content:space-between;
- align-items:center;
- font-weight:bold
+ align-items:center
 }
-#userBox{
- font-size:14px;
+#userInfo{
  background:#020617;
  padding:6px 10px;
- border-radius:8px
+ border-radius:8px;
+ font-size:14px
 }
 #menu{
- display:grid;
+ display:none;
  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
  gap:10px;padding:15px
 }
@@ -33,8 +32,7 @@ header{
  background:#020617;
  padding:18px;border-radius:12px;
  text-align:center;
- cursor:pointer;
- box-shadow:0 0 15px rgba(255,215,0,.1)
+ cursor:pointer
 }
 .menu-item:hover{background:#1e293b}
 .view{display:none;padding:15px}
@@ -55,10 +53,10 @@ input,select{
  padding:8px;border-radius:6px;
  cursor:pointer
 }
+.small{font-size:13px;color:#cbd5f5}
 .rank1{color:#facc15}
 .rank2{color:#e5e7eb}
 .rank3{color:#fb7185}
-.small{font-size:13px;color:#cbd5f5}
 </style>
 </head>
 
@@ -66,36 +64,29 @@ input,select{
 
 <header>
 <div>🎊 MTON SHOP ACC ROBLOX</div>
-<div id="userBox">Chưa đăng nhập</div>
+<div id="userInfo">Chưa đăng nhập</div>
 </header>
+
+<!-- LOGIN / REGISTER (TRANG CHÍNH) -->
+<div id="auth" class="view active">
+<div class="card">
+<h3>🔐 Đăng ký / Đăng nhập</h3>
+<input id="username" placeholder="Tên tài khoản">
+<button class="btn" onclick="login()">Tiếp tục</button>
+<p class="small">Chưa có tài khoản? Nhập tên để tạo mới.</p>
+</div>
+</div>
 
 <!-- MENU -->
 <div id="menu">
-<div class="menu-item" onclick="openView('home')">🏠 Trang chính</div>
 <div class="menu-item" onclick="openView('wallet')">💳 Nạp tiền</div>
 <div class="menu-item" onclick="openView('shop')">🛒 Shop Acc</div>
 <div class="menu-item" onclick="openView('myacc')">🎮 Acc đã mua</div>
 <div class="menu-item" onclick="openView('history')">📜 Lịch sử</div>
 </div>
 
-<!-- HOME -->
-<div id="home" class="view active">
-<div class="card">
-<h3>Chào mừng 🎉</h3>
-<p>Chọn dịch vụ bạn cần trong menu bên trên.</p>
-</div>
-</div>
-
-<!-- WALLET + TOP -->
+<!-- WALLET -->
 <div id="wallet" class="view">
-
-<div class="card">
-<h3>🔐 Đăng nhập</h3>
-<input id="user" placeholder="Tên đăng nhập">
-<button class="btn" onclick="login()">Đăng nhập</button>
-<p id="hello"></p>
-</div>
-
 <div class="card">
 <h3>💳 Nạp thẻ</h3>
 <select id="cardVal">
@@ -107,17 +98,14 @@ input,select{
 </select>
 <input placeholder="Mã thẻ">
 <input placeholder="Seri">
-<button class="btn">Gửi thẻ</button>
-<p class="small">Thẻ sẽ được admin duyệt</p>
+<button class="btn" onclick="napTien()">Gửi thẻ</button>
+<p class="small">Chờ admin duyệt</p>
 </div>
 
 <div class="card">
 <h3>🔥 Top nạp tháng</h3>
-<div id="topList">
-<p class="small">Chưa có dữ liệu</p>
+<div id="topList"></div>
 </div>
-</div>
-
 </div>
 
 <!-- SHOP -->
@@ -139,50 +127,70 @@ input,select{
 <!-- HISTORY -->
 <div id="history" class="view">
 <div class="card">
-<h3>📜 Lịch sử</h3>
-<p>Chưa có giao dịch.</p>
+<h3>📜 Lịch sử giao dịch</h3>
+<div id="his"></div>
 </div>
 </div>
 
 <script>
 let currentUser="";
-let balData=JSON.parse(localStorage.bal||"{}");
-let topData=JSON.parse(localStorage.top||"{}");
+let bal=JSON.parse(localStorage.bal||"{}");
+let top=JSON.parse(localStorage.top||"{}");
+let history=JSON.parse(localStorage.history||"{}");
+
+function login(){
+ currentUser=username.value;
+ if(!currentUser)return;
+ bal[currentUser]=bal[currentUser]||0;
+ history[currentUser]=history[currentUser]||[];
+ localStorage.bal=JSON.stringify(bal);
+ localStorage.history=JSON.stringify(history);
+
+ document.getElementById("auth").classList.remove("active");
+ document.getElementById("menu").style.display="grid";
+ openView("wallet");
+ updateUserInfo();
+}
+
+function updateUserInfo(){
+ document.getElementById("userInfo").innerHTML=
+  "👤 "+currentUser+" | 💰 "+bal[currentUser]+"đ";
+}
 
 function openView(id){
  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
  document.getElementById(id).classList.add('active');
  if(id==="wallet")renderTop();
+ if(id==="history")renderHistory();
 }
 
-function login(){
- currentUser=user.value;
- balData[currentUser]=balData[currentUser]||0;
- localStorage.bal=JSON.stringify(balData);
+function napTien(){
+ bal[currentUser]+=Number(cardVal.value);
+ top[currentUser]=(top[currentUser]||0)+Number(cardVal.value);
+ history[currentUser].push("Nạp "+cardVal.value+"đ");
 
- document.getElementById("hello").innerText="Xin chào "+currentUser;
- updateUserBox();
-}
+ localStorage.bal=JSON.stringify(bal);
+ localStorage.top=JSON.stringify(top);
+ localStorage.history=JSON.stringify(history);
 
-function updateUserBox(){
- if(currentUser){
-  document.getElementById("userBox").innerHTML=
-   "👤 "+currentUser+" | 💰 "+(balData[currentUser]||0)+"đ";
- }
+ updateUserInfo();
+ renderTop();
+ alert("Đã gửi yêu cầu nạp");
 }
 
 function renderTop(){
- let arr=Object.entries(topData)
-  .sort((a,b)=>b[1]-a[1])
-  .slice(0,5);
-
+ let arr=Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,5);
  let html="";
  arr.forEach((e,i)=>{
-  let cls=i==0?"rank1":i==1?"rank2":i==2?"rank3":"";
   let icon=i==0?"🥇":i==1?"🥈":i==2?"🥉":"#"+(i+1);
-  html+=`<p class="${cls}">${icon} ${e[0]} - ${e[1]}đ</p>`;
+  html+=`<p>${icon} ${e[0]} - ${e[1]}đ</p>`;
  });
- document.getElementById("topList").innerHTML=html||"<p>Chưa có</p>";
+ document.getElementById("topList").innerHTML=html||"Chưa có";
+}
+
+function renderHistory(){
+ let h=history[currentUser]||[];
+ document.getElementById("his").innerHTML=h.map(x=>"<p>"+x+"</p>").join("")||"Chưa có";
 }
 </script>
 
