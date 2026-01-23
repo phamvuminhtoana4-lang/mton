@@ -89,7 +89,9 @@ img{max-width:100%;border-radius:8px}
 <h3>Chuyển khoản</h3>
 <b>Viettel Money</b><br>
 STK: <b>9704229201718425041</b><br>
-Nội dung CK: <b id="ckNoiDung"></b>
+Nội dung CK:
+<b id="ckNoiDung"></b>
+<button onclick="copyCK()" style="margin-left:5px">📋 Copy</button>
 </div>
 </div>
 
@@ -110,6 +112,14 @@ Nội dung CK: <b id="ckNoiDung"></b>
 </div>
 
 <div class="card">
+<h3>Cộng tiền thủ công</h3>
+<input id="addUser" placeholder="Tên tài khoản">
+<input id="addMoney" type="number" placeholder="Số tiền">
+<input id="addNote" placeholder="Nội dung chuyển khoản">
+<button onclick="adminAddMoney()">Cộng tiền</button>
+</div>
+
+<div class="card">
 <h3>Up acc</h3>
 <input id="aname" placeholder="Tên acc">
 <input id="auser" placeholder="TK acc">
@@ -126,15 +136,6 @@ Nội dung CK: <b id="ckNoiDung"></b>
 </div>
 </div>
 
-</div>
-
-<div id="aiBox">
-<div id="aiHead" onclick="toggleAI()">🤖 AI hỗ trợ</div>
-<div id="aiBody">
-<div id="chat" class="chat"></div>
-<input id="ask" placeholder="Hỏi AI..." onkeydown="if(event.key==='Enter')sendAI()">
-<button onclick="sendAI()">Gửi</button>
-</div>
 </div>
 
 <script>
@@ -183,7 +184,14 @@ function login(){
 function logout(){location.reload()}
 
 function napThe(){
- naps.push({u:cur,mg:+menhgia.value,seri,mathe,st:"Chờ"});
+ naps.push({
+  u:cur,
+  mg:+menhgia.value,
+  seri,
+  mathe,
+  nd:"NAP_"+cur,
+  st:"Chờ"
+ });
  localStorage.naps=JSON.stringify(naps);
  alert("Đã gửi thẻ");
 }
@@ -191,7 +199,7 @@ function napThe(){
 function renderNap(){
  hisNap.innerHTML="";
  naps.filter(n=>n.u==cur).forEach(n=>{
-  hisNap.innerHTML+=`<div class="card">${n.mg}đ - ${n.st}</div>`;
+  hisNap.innerHTML+=`<div class="card">${n.mg}đ - ${n.st}<br><small>${n.nd||""}</small></div>`;
  });
 }
 
@@ -236,7 +244,7 @@ function renderAdmin(){
  naps.forEach((n,i)=>{
   if(n.st!="Chờ")return;
   adminNap.innerHTML+=`
-  <div class="card">${n.u} - ${n.mg}đ
+  <div class="card">${n.u} - ${n.mg}đ<br>${n.nd||""}
   <button onclick="duyetNap(${i})">Duyệt</button>
   <button onclick="saiNap(${i})">Sai</button>
   </div>`;
@@ -291,26 +299,18 @@ function loadImg(e){
  r.onload=()=>{img=r.result;preview.src=img};
  r.readAsDataURL(e.target.files[0]);
 }
+
 function addAcc(){
  accs.push({name:aname.value,user:auser.value,pass:apass.value,price:+aprice.value,note:anote.value,type:atype.value,img});
  localStorage.accs=JSON.stringify(accs);
  alert("Đã thêm acc");
 }
 
-function toggleAI(){
- aiBody.style.display=aiBody.style.display=="none"?"block":"none";
-}
-function sendAI(){
- if(!ask.value)return;
- chat.innerHTML+=`<div class="user">Bạn: ${ask.value}</div>`;
- let a="Bạn vui lòng liên hệ admin.";
- if(ask.value.includes("mua"))a="Chọn acc → bấm mua → admin duyệt.";
- if(ask.value.includes("nạp"))a="Vào mục nạp tiền để nạp.";
- chat.innerHTML+=`<div class="ai">AI: ${a}</div>`;
- ask.value="";
- chat.scrollTop=9999;
+function copyCK(){
+ navigator.clipboard.writeText(ckNoiDung.innerText);
+ alert("Đã copy nội dung chuyển khoản");
 }
 </script>
 
 </body>
- </html>
+</html>
