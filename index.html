@@ -69,24 +69,22 @@ img{max-width:100%;border-radius:8px}
 <div id="nap" class="view">
 <div class="card">
 <h3>Nạp thẻ cào</h3>
-
 <select id="menhgia">
-  <option value="10000">10.000đ</option>
-  <option value="20000">20.000đ</option>
-  <option value="50000">50.000đ</option>
-  <option value="100000">100.000đ</option>
-  <option value="200000">200.000đ</option>
-  <option value="500000">500.000đ</option>
-  <option value="1000000">1.000.000đ</option>
+<option value="10000">10.000đ</option>
+<option value="20000">20.000đ</option>
+<option value="50000">50.000đ</option>
+<option value="100000">100.000đ</option>
+<option value="200000">200.000đ</option>
+<option value="500000">500.000đ</option>
+<option value="1000000">1.000.000đ</option>
 </select>
-
 <input id="seri" placeholder="Seri thẻ">
 <input id="mathe" placeholder="Mã thẻ">
 <button onclick="napThe()">Gửi thẻ</button>
 </div>
 
 <div class="card">
-<h3>Chuyển khoản ngân hàng</h3>
+<h3>Chuyển khoản</h3>
 <b>Viettel Money</b><br>
 STK: <b>9704229201718425041</b><br>
 Nội dung CK: <b id="ckNoiDung"></b>
@@ -120,7 +118,7 @@ Nội dung CK: <b id="ckNoiDung"></b>
 </div>
 
 <div class="card">
-<h3>Duyệt nạp tiền</h3>
+<h3>Duyệt nạp</h3>
 <div id="adminNap"></div>
 </div>
 
@@ -138,7 +136,7 @@ let users=JSON.parse(localStorage.users||"{}");
 let accs=JSON.parse(localStorage.accs||"[]");
 let naps=JSON.parse(localStorage.naps||"[]");
 let buys=JSON.parse(localStorage.buys||"[]");
-let cur=null,isAdmin=false,img="";
+let cur=null,img="";
 
 function toggle(){side.style.left=side.style.left=="0px"?"-260px":"0px"}
 
@@ -155,9 +153,9 @@ function go(v){
 }
 
 function register(){
- if(!rUser.value||!rPass.value||!rPass2.value) return alert("Nhập đủ thông tin");
+ if(!rUser.value||!rPass.value||!rPass2.value) return alert("Nhập đủ");
  if(rPass.value!=rPass2.value) return alert("Mật khẩu không khớp");
- if(users[rUser.value]) return alert("Tài khoản đã tồn tại");
+ if(users[rUser.value]) return alert("Đã tồn tại");
  users[rUser.value]={pass:rPass.value,b:0};
  localStorage.users=JSON.stringify(users);
  alert("Đăng ký thành công");
@@ -165,12 +163,12 @@ function register(){
 
 function login(){
  if(lUser.value==ADMIN_USER && lPass.value==ADMIN_PASS){
-  cur="ADMIN";isAdmin=true;
+  cur="ADMIN";
   adminMenu.style.display="block";
   userBox.innerText="ADMIN";
   go("admin");return;
  }
- if(!users[lUser.value]||users[lUser.value].pass!=lPass.value) return alert("Sai tài khoản hoặc mật khẩu");
+ if(!users[lUser.value]||users[lUser.value].pass!=lPass.value) return alert("Sai thông tin");
  cur=lUser.value;
  userBox.innerText=cur+" | "+users[cur].b+"đ";
  ckNoiDung.innerText="NAP_"+cur;
@@ -182,17 +180,13 @@ function logout(){location.reload()}
 function napThe(){
  naps.push({u:cur,mg:menhgia.value,seri:seri.value,ma:mathe.value,st:"Chờ duyệt"});
  localStorage.naps=JSON.stringify(naps);
- alert("Đã gửi thẻ, chờ admin duyệt");
+ alert("Đã gửi thẻ");
 }
 
 function renderNap(){
  hisNap.innerHTML="";
  naps.filter(n=>n.u==cur).forEach(n=>{
-  hisNap.innerHTML+=`
-  <div class="card">
-   ${Number(n.mg).toLocaleString()}đ -
-   <span class="badge ${n.st=='Chờ duyệt'?'wait':n.st=='Đã duyệt'?'ok':'err'}">${n.st}</span>
-  </div>`;
+  hisNap.innerHTML+=`<div class="card">${Number(n.mg).toLocaleString()}đ - <span class="badge ${n.st=='Chờ duyệt'?'wait':n.st=='Đã duyệt'?'ok':'err'}">${n.st}</span></div>`;
  });
 }
 
@@ -224,19 +218,18 @@ function renderShop(t){
 }
 
 function buy(i){
- buys.push({u:cur,i,st:"Chờ giao"});
+ buys.push({u:cur,acc:accs[i],st:"Chờ giao"});
  localStorage.buys=JSON.stringify(buys);
- alert("Đã mua, chờ admin giao acc");
+ alert("Đã mua, chờ admin giao");
 }
 
 function renderBuy(){
  hisBuy.innerHTML="";
  buys.filter(b=>b.u==cur).forEach(b=>{
-  let a=accs[b.i];
   hisBuy.innerHTML+=`
   <div class="card">
-   ${a.name} - ${b.st}
-   ${b.st=="Thành công"?`<hr>TK:${a.user}<br>MK:${a.pass}<br>${a.note}`:""}
+   ${b.acc.name} - ${b.st}
+   ${b.st=="Thành công"?`<hr>TK:${b.acc.user}<br>MK:${b.acc.pass}<br>${b.acc.note}`:""}
   </div>`;
  });
 }
@@ -245,21 +238,12 @@ function renderAdmin(){
  adminNap.innerHTML="";
  naps.forEach((n,i)=>{
   if(n.st=="Chờ duyệt")
-   adminNap.innerHTML+=`
-   <div class="card">
-    ${n.u} - ${Number(n.mg).toLocaleString()}đ
-    <button onclick="duyetNap(${i})">Duyệt</button>
-    <button onclick="saiNap(${i})">Sai thẻ</button>
-   </div>`;
+   adminNap.innerHTML+=`<div class="card">${n.u} - ${Number(n.mg).toLocaleString()}đ <button onclick="duyetNap(${i})">Duyệt</button> <button onclick="saiNap(${i})">Sai</button></div>`;
  });
  adminBuy.innerHTML="";
  buys.forEach((b,i)=>{
   if(b.st=="Chờ giao")
-   adminBuy.innerHTML+=`
-   <div class="card">
-    ${b.u}
-    <button onclick="duyetBuy(${i})">Giao acc</button>
-   </div>`;
+   adminBuy.innerHTML+=`<div class="card">${b.u} - ${b.acc.name} <button onclick="duyetBuy(${i})">Giao acc</button></div>`;
  });
 }
 
@@ -279,6 +263,8 @@ function saiNap(i){
 
 function duyetBuy(i){
  buys[i].st="Thành công";
+ accs = accs.filter(a => a !== buys[i].acc);
+ localStorage.accs=JSON.stringify(accs);
  localStorage.buys=JSON.stringify(buys);
  renderAdmin();
 }
