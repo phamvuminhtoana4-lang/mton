@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>MTON Shop Acc Roblox</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:#0d0d0d;
+color:#ffffff;
+}
+header{
+background:#ff9800;
+padding:20px;
+text-align:center;
+}
+.section{
+max-width:900px;
+margin:auto;
+padding:20px;
+}
+.acc{
+background:#1e1e1e;
+padding:15px;
+margin-bottom:15px;
+border-radius:10px;
+}
+.acc p{
+margin:6px 0;
+}
+.price{
+color:#4caf50;
+font-weight:bold;
+}
+button{
+padding:10px 16px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-size:14px;
+}
+.buy{
+background:#4caf50;
+color:white;
+}
+.admin-btn{
+background:#2196f3;
+color:white;
+}
+.hidden{
+display:none;
+}
+input{
+width:100%;
+padding:8px;
+margin:6px 0;
+border-radius:5px;
+border:none;
+}
+footer{
+text-align:center;
+padding:15px;
+color:#aaa;
+font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>🔥 MTON SHOP ACC ROBLOX 🔥</h1>
+<p>Uy tín – Giao dịch nhanh – Hỗ trợ Facebook</p>
+<p>🌐 https://mton.github.io</p>
+</header>
+
+<!-- DANH SÁCH ACC -->
+<div class="section">
+<h2>🎮 Acc đang bán</h2>
+
+<div id="accList">
+
+<div class="acc">
+<p>⭐ Acc Roblox VIP</p>
+<p>💎 Robux: 5.000</p>
+<p>🔒 Trắng thông tin</p>
+<p class="price">💰 300.000đ</p>
+<a href="https://www.facebook.com/share/16sFRkuEd7/" target="_blank">
+<button class="buy">Liên hệ mua</button>
+</a>
+</div>
+
+</div>
+</div>
+
+<!-- NẠP TIỀN -->
+<div class="section">
+<h2>💳 Nạp tiền</h2>
+<p><b>Chuyển khoản ngân hàng</b></p>
+<p>Ngân hàng: MB Bank</p>
+<p>STK: 0123456789</p>
+<p>Chủ tài khoản: MTON</p>
+
+<p><b>Thẻ cào:</b> Viettel / Mobifone / Vinaphone</p>
+<p>📌 Chuyển tiền xong → inbox Facebook gửi bill</p>
+</div>
+
+<!-- LIÊN HỆ -->
+<div class="section">
+<h2>📞 Liên hệ</h2>
+<a href="https://www.facebook.com/share/16sFRkuEd7/" target="_blank">
+<button class="buy">Inbox Facebook</button>
+</a>
+</div>
+
+<!-- ADMIN -->
+<div class="section">
+<button class="admin-btn" onclick="toggleLogin()">🔐 Admin</button>
+
+<div id="loginBox" class="hidden">
+<input type="password" id="adminPass" placeholder="Nhập mật khẩu admin">
+<button class="admin-btn" onclick="login()">Đăng nhập</button>
+</div>
+
+<div id="adminPanel" class="hidden">
+<h3>➕ Thêm acc (tạm thời)</h3>
+<input id="name" placeholder="Tên acc">
+<input id="robux" placeholder="Robux">
+<input id="price" placeholder="Giá">
+<button class="admin-btn" onclick="addAcc()">Thêm acc</button>
+<p style="font-size:13px;color:#aaa">
+⚠ Acc thêm bằng admin sẽ mất khi tải lại trang
+</p>
+</div>
+</div>
+
+<footer>
+© 2026 MTON Shop Acc Roblox
+</footer>
+
+<script>
+const ADMIN_PASSWORD = "mton123"; // đổi mật khẩu tại đây
+
+function toggleLogin(){
+document.getElementById("loginBox").classList.toggle("hidden");
+}
+
+function login(){
+let pass = document.getElementById("adminPass").value;
+if(pass === ADMIN_PASSWORD){
+document.getElementById("adminPanel").classList.remove("hidden");
+alert("Đăng nhập admin thành công");
+}else{
+alert("Sai mật khẩu");
+}
+}
+
+function addAcc(){
+let name = document.getElementById("name").value;
+let robux = document.getElementById("robux").value;
+let price = document.getElementById("price").value;
+
+if(!name || !robux || !price){
+alert("Vui lòng nhập đủ thông tin");
+return;
+}
+
+let accHTML = `
+<div class="acc">
+<p>⭐ ${name}</p>
+<p>💎 Robux: ${robux}</p>
+<p class="price">💰 ${price}đ</p>
+<a href="https://www.facebook.com/share/16sFRkuEd7/" target="_blank">
+<button class="buy">Liên hệ mua</button>
+</a>
+</div>
+`;
+
+document.getElementById("accList").innerHTML += accHTML;
+
+document.getElementById("name").value = "";
+document.getElementById("robux").value = "";
+document.getElementById("price").value = "";
+}
+</script>
+
+</body>
+</html>
