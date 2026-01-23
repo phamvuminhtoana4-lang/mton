@@ -2,205 +2,189 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>MTON Shop Acc - Top Nạp</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MTON Shop Acc</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body{
  margin:0;font-family:Arial;
  background:radial-gradient(circle at top,#1e293b,#020617);
- color:#fff;overflow-x:hidden
+ color:#fff
 }
-nav{
- position:sticky;top:0;z-index:10;
+header{
  background:rgba(2,6,23,.9);
- display:flex;gap:8px;padding:10px
+ padding:12px 15px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ font-weight:bold
 }
-nav button{
- background:#1e293b;color:#fff;
- border:none;padding:8px 12px;
- border-radius:6px;cursor:pointer
+#userBox{
+ font-size:14px;
+ background:#020617;
+ padding:6px 10px;
+ border-radius:8px
 }
-nav button:hover{background:#334155}
-section{display:none;padding:15px}
+#menu{
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+ gap:10px;padding:15px
+}
+.menu-item{
+ background:#020617;
+ padding:18px;border-radius:12px;
+ text-align:center;
+ cursor:pointer;
+ box-shadow:0 0 15px rgba(255,215,0,.1)
+}
+.menu-item:hover{background:#1e293b}
+.view{display:none;padding:15px}
 .active{display:block}
 .card{
- background:rgba(2,6,23,.9);
+ background:#020617;
  padding:12px;border-radius:12px;
  margin-bottom:12px
 }
-input,select{width:100%;padding:8px;border-radius:6px;border:none;margin:5px 0}
-.btn{background:#fde047;color:#000;font-weight:bold;border:none;padding:8px;border-radius:6px}
-.rank1{color:#facc15;font-weight:bold}
-.rank2{color:#e5e7eb;font-weight:bold}
-.rank3{color:#fb7185;font-weight:bold}
-
-/* Hoa đào */
-.flower{
- position:fixed;top:-10px;width:16px;height:16px;
- background:pink;border-radius:50%;
- box-shadow:-8px 0 pink,8px 0 pink,0 -8px pink,0 8px pink;
- animation:fall linear infinite;opacity:.7
+input,select{
+ width:100%;padding:8px;
+ border-radius:6px;border:none;
+ margin:5px 0
 }
-@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+.btn{
+ background:#fde047;color:#000;
+ border:none;font-weight:bold;
+ padding:8px;border-radius:6px;
+ cursor:pointer
+}
+.rank1{color:#facc15}
+.rank2{color:#e5e7eb}
+.rank3{color:#fb7185}
+.small{font-size:13px;color:#cbd5f5}
 </style>
 </head>
+
 <body>
 
-<nav>
-<button onclick="show('home')">🏠 Trang chính</button>
-<button onclick="show('shop')">🛒 Shop</button>
-<button onclick="show('top')">🔥 Top nạp</button>
-<button onclick="show('history')">📜 Lịch sử</button>
-<button onclick="show('admin')">🔐 Admin</button>
-</nav>
+<header>
+<div>🎊 MTON SHOP ACC ROBLOX</div>
+<div id="userBox">Chưa đăng nhập</div>
+</header>
+
+<!-- MENU -->
+<div id="menu">
+<div class="menu-item" onclick="openView('home')">🏠 Trang chính</div>
+<div class="menu-item" onclick="openView('wallet')">💳 Nạp tiền</div>
+<div class="menu-item" onclick="openView('shop')">🛒 Shop Acc</div>
+<div class="menu-item" onclick="openView('myacc')">🎮 Acc đã mua</div>
+<div class="menu-item" onclick="openView('history')">📜 Lịch sử</div>
+</div>
 
 <!-- HOME -->
-<section id="home" class="active">
+<div id="home" class="view active">
 <div class="card">
-<h3>Đăng nhập</h3>
+<h3>Chào mừng 🎉</h3>
+<p>Chọn dịch vụ bạn cần trong menu bên trên.</p>
+</div>
+</div>
+
+<!-- WALLET + TOP -->
+<div id="wallet" class="view">
+
+<div class="card">
+<h3>🔐 Đăng nhập</h3>
 <input id="user" placeholder="Tên đăng nhập">
-<button class="btn" onclick="login()">Vào shop</button>
+<button class="btn" onclick="login()">Đăng nhập</button>
 <p id="hello"></p>
-<p>Số dư: <b id="bal">0</b>đ</p>
 </div>
 
 <div class="card">
-<h3>Nạp thẻ</h3>
+<h3>💳 Nạp thẻ</h3>
 <select id="cardVal">
-<option value="10000">10.000</option>
-<option value="50000">50.000</option>
-<option value="100000">100.000</option>
-<option value="200000">200.000</option>
-<option value="500000">500.000</option>
+<option value="10000">10.000đ</option>
+<option value="50000">50.000đ</option>
+<option value="100000">100.000đ</option>
+<option value="200000">200.000đ</option>
+<option value="500000">500.000đ</option>
 </select>
-<input id="cardCode" placeholder="Mã thẻ">
-<input id="cardSeri" placeholder="Seri">
-<button class="btn" onclick="sendCard()">Gửi thẻ</button>
-<p style="font-size:13px;color:#cbd5f5">Chờ admin duyệt</p>
+<input placeholder="Mã thẻ">
+<input placeholder="Seri">
+<button class="btn">Gửi thẻ</button>
+<p class="small">Thẻ sẽ được admin duyệt</p>
 </div>
-</section>
+
+<div class="card">
+<h3>🔥 Top nạp tháng</h3>
+<div id="topList">
+<p class="small">Chưa có dữ liệu</p>
+</div>
+</div>
+
+</div>
 
 <!-- SHOP -->
-<section id="shop">
+<div id="shop" class="view">
 <div class="card">
-<h3>Shop Acc</h3>
-<div id="accList"></div>
+<h3>🛒 Shop Acc</h3>
+<p>Acc sẽ hiển thị khi admin thêm.</p>
 </div>
-</section>
+</div>
 
-<!-- TOP -->
-<section id="top">
+<!-- MY ACC -->
+<div id="myacc" class="view">
 <div class="card">
-<h3>🔥 TOP NẠP THÁNG</h3>
-<div id="topList"></div>
+<h3>🎮 Acc đã mua</h3>
+<p>Chưa có acc.</p>
 </div>
-</section>
+</div>
 
 <!-- HISTORY -->
-<section id="history">
+<div id="history" class="view">
 <div class="card">
-<h3>Lịch sử nạp</h3>
-<div id="hisCard"></div>
-</div>
-</section>
-
-<!-- ADMIN -->
-<section id="admin">
-<div class="card">
-<h3>Admin</h3>
-<input type="password" id="adminPass" placeholder="Mật khẩu admin">
-<button class="btn" onclick="adminLogin()">Đăng nhập</button>
-</div>
-<div id="adminPanel" style="display:none">
-<div class="card">
-<h4>Duyệt thẻ</h4>
-<div id="adminCards"></div>
+<h3>📜 Lịch sử</h3>
+<p>Chưa có giao dịch.</p>
 </div>
 </div>
-</section>
 
 <script>
-const ADMIN_PASS="Pvmt207#";
-let u="";
-let bal=JSON.parse(localStorage.bal||"{}");
-let cards=JSON.parse(localStorage.cards||"[]");
-let topNap=JSON.parse(localStorage.topNap||"{}");
+let currentUser="";
+let balData=JSON.parse(localStorage.bal||"{}");
+let topData=JSON.parse(localStorage.top||"{}");
 
-function show(id){
- document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
- document.getElementById(id).classList.add("active");
- if(id==="top")renderTop();
+function openView(id){
+ document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ if(id==="wallet")renderTop();
 }
 
 function login(){
- u=user.value;
- bal[u]=bal[u]||0;
- localStorage.bal=JSON.stringify(bal);
- hello.innerText="Xin chào "+u;
- balUI();
+ currentUser=user.value;
+ balData[currentUser]=balData[currentUser]||0;
+ localStorage.bal=JSON.stringify(balData);
+
+ document.getElementById("hello").innerText="Xin chào "+currentUser;
+ updateUserBox();
 }
 
-function balUI(){bal.innerText=bal[u]||0}
-
-function sendCard(){
- cards.push({u,val:+cardVal.value,code:cardCode.value,seri:cardSeri.value,ok:false});
- localStorage.cards=JSON.stringify(cards);
- alert("Đã gửi thẻ");
-}
-
-function adminLogin(){
- if(adminPass.value===ADMIN_PASS){
-  adminPanel.style.display="block";
-  renderAdmin();
+function updateUserBox(){
+ if(currentUser){
+  document.getElementById("userBox").innerHTML=
+   "👤 "+currentUser+" | 💰 "+(balData[currentUser]||0)+"đ";
  }
 }
 
-function renderAdmin(){
- adminCards.innerHTML="";
- cards.forEach((c,i)=>{
-  if(!c.ok){
-   adminCards.innerHTML+=`
-   <div class="card">
-    ${c.u} - ${c.val}đ
-    <button class="btn" onclick="approve(${i})">Duyệt</button>
-   </div>`;
-  }
- });
-}
-
-function approve(i){
- cards[i].ok=true;
- bal[cards[i].u]=(bal[cards[i].u]||0)+cards[i].val;
-
- topNap[cards[i].u]=(topNap[cards[i].u]||0)+cards[i].val;
-
- localStorage.bal=JSON.stringify(bal);
- localStorage.cards=JSON.stringify(cards);
- localStorage.topNap=JSON.stringify(topNap);
- renderAdmin();
-}
-
 function renderTop(){
- let arr=Object.entries(topNap).sort((a,b)=>b[1]-a[1]).slice(0,10);
- topList.innerHTML="";
+ let arr=Object.entries(topData)
+  .sort((a,b)=>b[1]-a[1])
+  .slice(0,5);
+
+ let html="";
  arr.forEach((e,i)=>{
   let cls=i==0?"rank1":i==1?"rank2":i==2?"rank3":"";
   let icon=i==0?"🥇":i==1?"🥈":i==2?"🥉":"#"+(i+1);
-  topList.innerHTML+=`
-   <div class="card ${cls}">
-    ${icon} ${e[0]} - ${e[1].toLocaleString()}đ
-   </div>`;
+  html+=`<p class="${cls}">${icon} ${e[0]} - ${e[1]}đ</p>`;
  });
-}
-
-/* Hoa đào */
-for(let i=0;i<20;i++){
- let f=document.createElement("div");
- f.className="flower";
- f.style.left=Math.random()*100+"vw";
- f.style.animationDuration=8+Math.random()*6+"s";
- document.body.appendChild(f);
+ document.getElementById("topList").innerHTML=html||"<p>Chưa có</p>";
 }
 </script>
+
 </body>
 </html>
