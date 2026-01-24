@@ -163,13 +163,12 @@ let naps=JSON.parse(localStorage.naps||"[]");
 let buys=JSON.parse(localStorage.buys||"[]");
 let cur=null,img="";
 
+/* ===== CHUNG ===== */
 function updateBalance(){
  if(cur && users[cur]) balanceBox.innerText="Số dư: "+users[cur].b+"đ";
  else balanceBox.innerText="";
 }
-
 function toggle(){side.style.left=side.style.left=="0px"?"-260px":"0px"}
-
 function go(v){
  if(!cur&&v!="home")return alert("Đăng nhập trước");
  document.querySelectorAll('.view').forEach(x=>x.classList.remove("active"));
@@ -183,38 +182,42 @@ function go(v){
  side.style.left="-260px";
 }
 
+/* ===== ĐĂNG KÝ (CHỐNG TRÙNG) ===== */
 function register(){
+ let u=rUser.value.trim().toLowerCase();
+ if(!u||!rPass.value||!rPass2.value)return alert("Thiếu thông tin");
  if(rPass.value!=rPass2.value)return alert("Mật khẩu không khớp");
- users[rUser.value]={pass:rPass.value,b:0};
+ if(users[u])return alert("Tên tài khoản đã tồn tại");
+ users[u]={pass:rPass.value,b:0};
  localStorage.users=JSON.stringify(users);
  alert("Đăng ký thành công");
 }
 
+/* ===== ĐĂNG NHẬP ===== */
 function login(){
- if(lUser.value==ADMIN_USER&&lPass.value==ADMIN_PASS){
+ let u=lUser.value.trim().toLowerCase();
+ if(u==ADMIN_USER&&lPass.value==ADMIN_PASS){
   cur="ADMIN";
   adminMenu.style.display="block";
   userBox.innerText="ADMIN";
   updateBalance();
   go("admin");return;
  }
- if(!users[lUser.value]||users[lUser.value].pass!=lPass.value)
-  return alert("Sai thông tin");
- cur=lUser.value;
+ if(!users[u]||users[u].pass!=lPass.value)return alert("Sai thông tin");
+ cur=u;
  userBox.innerText=cur+" | "+users[cur].b+"đ";
  ckNoiDung.innerText="NAP_"+cur;
  updateBalance();
  go("nap");
 }
-
 function logout(){location.reload()}
 
+/* ===== NẠP ===== */
 function napThe(){
- naps.push({u:cur,mg:+menhgia.value,seri,mathe,nd:"NAP_"+cur,st:"Chờ"});
+ naps.push({u:cur,mg:+menhgia.value,seri:seri.value,mathe:mathe.value,nd:"NAP_"+cur,st:"Chờ"});
  localStorage.naps=JSON.stringify(naps);
  alert("Đã gửi thẻ");
 }
-
 function renderNap(){
  hisNap.innerHTML="";
  naps.filter(n=>n.u==cur).forEach(n=>{
@@ -222,6 +225,7 @@ function renderNap(){
  });
 }
 
+/* ===== SHOP ===== */
 function renderShop(t){
  let box=document.getElementById(t);box.innerHTML="";
  accs.filter(a=>a.type==t).forEach((a,i)=>{
@@ -232,34 +236,28 @@ function renderShop(t){
    <span class="small">${a.note}</span><br>
    ${t=="blind"
      ? `<button onclick="buyBlind(${i})">Mua túi mù</button>`
-     : `<button onclick="buy(${i})">Mua</button>`
-   }
+     : `<button onclick="buy(${i})">Mua</button>`}
    ${cur==="ADMIN"?`<button class="adminDel" onclick="delAcc(${i})">❌</button>`:""}
   </div>`;
  });
 }
-
 function buy(i){
  buys.push({u:cur,acc:accs[i],st:"Chờ"});
  localStorage.buys=JSON.stringify(buys);
  alert("Đã gửi yêu cầu mua");
 }
-
 function buyBlind(i){
  let a=accs[i];
- if(users[cur].b < a.price) return alert("Không đủ tiền");
- users[cur].b -= a.price;
- buys.push({
-  u:cur,
-  acc:{name:a.name,user:"Ẩn",pass:"Ẩn"},
-  st:"Chờ"
- });
+ if(users[cur].b<a.price)return alert("Không đủ tiền");
+ users[cur].b-=a.price;
+ buys.push({u:cur,acc:{name:a.name,user:"Ẩn",pass:"Ẩn"},st:"Chờ"});
  localStorage.users=JSON.stringify(users);
  localStorage.buys=JSON.stringify(buys);
  updateBalance();
- alert("Đã mua acc túi mù, chờ admin duyệt");
+ alert("Đã mua acc túi mù");
 }
 
+/* ===== LỊCH SỬ MUA ===== */
 function renderBuy(){
  hisBuy.innerHTML="";
  buys.filter(b=>b.u==cur).forEach(b=>{
@@ -268,6 +266,7 @@ function renderBuy(){
  });
 }
 
+/* ===== ADMIN ===== */
 function renderAdmin(){
  adminNap.innerHTML="";
  naps.forEach((n,i)=>{
@@ -279,52 +278,56 @@ function renderAdmin(){
   </div>`;
  });
 }
-
 function duyetNap(i){
  let n=naps[i];
  n.st="Duyệt";
  users[n.u].b+=n.mg;
  localStorage.users=JSON.stringify(users);
  localStorage.naps=JSON.stringify(naps);
- if(n.u===cur) updateBalance();
+ if(n.u===cur)updateBalance();
  renderAdmin();
 }
-
+function saiNap(i){
+ naps[i].st="Sai";
+ localStorage.naps=JSON.stringify(naps);
+ renderAdmin();
+}
 function adminAddMoney(){
- let u=addUser.value;
- let m=+addMoney.value;
- let nd=addNote.value;
+ let u=addUser.value,m=+addMoney.value,nd=addNote.value;
  if(!users[u]||m<=0)return alert("Lỗi dữ liệu");
  users[u].b+=m;
  naps.push({u,mg:m,nd,st:"ADMIN CỘNG"});
  localStorage.users=JSON.stringify(users);
  localStorage.naps=JSON.stringify(naps);
- if(u===cur) updateBalance();
  alert("Đã cộng tiền");
  renderAdmin();
 }
+function delAcc(i){
+ accs.splice(i,1);
+ localStorage.accs=JSON.stringify(accs);
+ alert("Đã xóa acc");
+}
 
+/* ===== UP ACC ===== */
 function loadImg(e){
  let r=new FileReader();
  r.onload=()=>{img=r.result;preview.src=img};
  r.readAsDataURL(e.target.files[0]);
 }
-
 function addAcc(){
  accs.push({name:aname.value,user:auser.value,pass:apass.value,price:+aprice.value,note:anote.value,type:atype.value,img});
  localStorage.accs=JSON.stringify(accs);
  alert("Đã thêm acc");
 }
 
+/* ===== CK ===== */
 function copyCK(){
  navigator.clipboard.writeText(ckNoiDung.innerText);
  alert("Đã copy nội dung CK");
 }
 
-/* AI */
-function toggleAI(){
- aiBody.style.display=aiBody.style.display=="none"?"block":"none";
-}
+/* ===== AI ===== */
+function toggleAI(){aiBody.style.display=aiBody.style.display=="none"?"block":"none";}
 function sendAI(){
  if(!ask.value)return;
  chat.innerHTML+=`<div class="user">Bạn: ${ask.value}</div>`;
@@ -338,4 +341,4 @@ function sendAI(){
 </script>
 
 </body>
-                                    </html>
+</html>
