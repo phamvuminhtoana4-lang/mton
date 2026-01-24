@@ -145,7 +145,6 @@ Nội dung CK:
 
 </div>
 
-<!-- AI BOX -->
 <div id="aiBox">
 <div id="aiHead" onclick="toggleAI()">🤖 AI hỗ trợ</div>
 <div id="aiBody">
@@ -163,7 +162,6 @@ let naps=JSON.parse(localStorage.naps||"[]");
 let buys=JSON.parse(localStorage.buys||"[]");
 let cur=null,img="";
 
-/* ===== CHUNG ===== */
 function updateBalance(){
  if(cur && users[cur]) balanceBox.innerText="Số dư: "+users[cur].b+"đ";
  else balanceBox.innerText="";
@@ -182,7 +180,6 @@ function go(v){
  side.style.left="-260px";
 }
 
-/* ===== ĐĂNG KÝ ===== */
 function register(){
  let u=rUser.value.trim().toLowerCase();
  if(!u||!rPass.value||!rPass2.value)return alert("Thiếu thông tin");
@@ -193,7 +190,6 @@ function register(){
  alert("Đăng ký thành công");
 }
 
-/* ===== ĐĂNG NHẬP ===== */
 function login(){
  let u=lUser.value.trim().toLowerCase();
  if(u==ADMIN_USER&&lPass.value==ADMIN_PASS){
@@ -212,7 +208,6 @@ function login(){
 }
 function logout(){location.reload()}
 
-/* ===== NẠP ===== */
 function napThe(){
  naps.push({u:cur,mg:+menhgia.value,seri:seri.value,mathe:mathe.value,nd:"NAP_"+cur,st:"Chờ"});
  localStorage.naps=JSON.stringify(naps);
@@ -225,7 +220,6 @@ function renderNap(){
  });
 }
 
-/* ===== SHOP ===== */
 function renderShop(t){
  let box=document.getElementById(t);box.innerHTML="";
  accs.filter(a=>a.type==t).forEach((a,i)=>{
@@ -257,7 +251,6 @@ function buyBlind(i){
  alert("Đã mua acc túi mù");
 }
 
-/* ===== LỊCH SỬ MUA ===== */
 function renderBuy(){
  hisBuy.innerHTML="";
  buys.filter(b=>b.u==cur).forEach(b=>{
@@ -266,7 +259,6 @@ function renderBuy(){
  });
 }
 
-/* ===== ADMIN ===== */
 function renderAdmin(){
  adminNap.innerHTML="";
  naps.forEach((n,i)=>{
@@ -277,6 +269,7 @@ function renderAdmin(){
   <button onclick="saiNap(${i})">Sai</button>
   </div>`;
  });
+ renderAdminCay();
 }
 function duyetNap(i){
  let n=naps[i];
@@ -308,7 +301,6 @@ function delAcc(i){
  alert("Đã xóa acc");
 }
 
-/* ===== UP ACC ===== */
 function loadImg(e){
  let r=new FileReader();
  r.onload=()=>{img=r.result;preview.src=img};
@@ -320,64 +312,30 @@ function addAcc(){
  alert("Đã thêm acc");
 }
 
-/* ===== CK ===== */
 function copyCK(){
  navigator.clipboard.writeText(ckNoiDung.innerText);
  alert("Đã copy nội dung CK");
 }
 
-/* ================= AI THÔNG MINH – TUÂN THỦ NỘI QUY ================= */
-
-const bannedWords=[
- "mật khẩu","password","pass","admin","chủ shop",
- "acc chưa bán","tk acc","database","nội bộ",
- "hack","bypass","số dư người khác"
-];
-
+const bannedWords=["mật khẩu","password","pass","admin","chủ shop","acc chưa bán","tk acc","database","nội bộ","hack","bypass","số dư người khác"];
 const aiAnswers={
- greet:[
-  "Chào bạn 👋 Mình hỗ trợ nạp tiền và mua acc nhé.",
-  "Xin chào 😄 Bạn cần hỗ trợ gì về shop không?"
- ],
- nap:[
-  "Bạn vào mục Nạp tiền và làm theo hướng dẫn.",
-  "Sau khi nạp, admin sẽ duyệt và cộng tiền."
- ],
- buy:[
-  "Bạn chọn acc phù hợp rồi bấm mua nhé.",
-  "Sau khi duyệt, thông tin acc sẽ hiện trong lịch sử mua."
- ],
- error:[
-  "Bạn thử tải lại trang và thao tác lại nhé.",
-  "Nếu vẫn lỗi, bạn liên hệ admin để được hỗ trợ."
- ],
- refuse:[
-  "Xin lỗi, thông tin này mình không thể cung cấp.",
-  "Đây là thông tin nội bộ của shop."
- ]
+ greet:["Chào bạn 👋 Mình hỗ trợ nạp tiền và mua acc nhé.","Xin chào 😄 Bạn cần hỗ trợ gì về shop không?"],
+ nap:["Bạn vào mục Nạp tiền và làm theo hướng dẫn.","Sau khi nạp, admin sẽ duyệt và cộng tiền."],
+ buy:["Bạn chọn acc phù hợp rồi bấm mua nhé.","Sau khi duyệt, thông tin acc sẽ hiện trong lịch sử mua."],
+ error:["Bạn thử tải lại trang và thao tác lại nhé.","Nếu vẫn lỗi, bạn liên hệ admin để được hỗ trợ."],
+ refuse:["Xin lỗi, thông tin này mình không thể cung cấp.","Đây là thông tin nội bộ của shop."]
 };
-
 function rand(a){return a[Math.floor(Math.random()*a.length)]}
-
 function aiReply(q){
  q=q.toLowerCase();
-
- for(let w of bannedWords){
-  if(q.includes(w)) return rand(aiAnswers.refuse);
- }
-
+ for(let w of bannedWords){if(q.includes(w)) return rand(aiAnswers.refuse);}
  if(q.includes("chào")||q.includes("hi")) return rand(aiAnswers.greet);
  if(q.includes("nạp")||q.includes("thẻ")||q.includes("chuyển")) return rand(aiAnswers.nap);
  if(q.includes("mua")||q.includes("acc")) return rand(aiAnswers.buy);
  if(q.includes("lỗi")||q.includes("sai")) return rand(aiAnswers.error);
-
  return "Mình chỉ hỗ trợ các câu hỏi chung về shop nhé 🙂";
 }
-
-function toggleAI(){
- aiBody.style.display=aiBody.style.display=="none"?"block":"none";
-}
-
+function toggleAI(){aiBody.style.display=aiBody.style.display=="none"?"block":"none";}
 function sendAI(){
  if(!ask.value)return;
  chat.innerHTML+=`<div class="user">Bạn: ${ask.value}</div>`;
@@ -385,6 +343,90 @@ function sendAI(){
  ask.value="";
  chat.scrollTop=9999;
 }
+
+/* ================= THÊM CÀY THUÊ ================= */
+let cayThue=JSON.parse(localStorage.cayThue||"[]");
+
+document.addEventListener("DOMContentLoaded",()=>{
+ let a=document.createElement("a");
+ a.innerText="Cày thuê";
+ a.onclick=()=>go("caythue");
+ side.insertBefore(a,side.children[5]);
+
+ let v=document.createElement("div");
+ v.id="caythue";
+ v.className="view";
+ v.innerHTML=`
+ <div class="card">
+  <h3>Cày thuê</h3>
+  <input id="ctUser" placeholder="Tài khoản game">
+  <input id="ctPass" placeholder="Mật khẩu game">
+  <textarea id="ctNote" placeholder="Nội dung cày"></textarea>
+  <button onclick="guiCay()">Gửi yêu cầu</button>
+ </div>
+ <div class="card">
+  <h3>Yêu cầu của bạn</h3>
+  <div id="ctHis"></div>
+ </div>`;
+ document.querySelector(".container").appendChild(v);
+
+ let ac=document.createElement("div");
+ ac.className="card";
+ ac.innerHTML=`<h3>Duyệt cày thuê</h3><div id="adminCay"></div>`;
+ document.getElementById("admin").appendChild(ac);
+});
+
+function guiCay(){
+ if(!ctUser.value||!ctPass.value||!ctNote.value)return alert("Thiếu thông tin");
+ cayThue.push({id:Date.now(),u:cur,acc:ctUser.value,pass:ctPass.value,note:ctNote.value,price:0,st:"Chờ báo giá"});
+ localStorage.cayThue=JSON.stringify(cayThue);
+ renderCayUser();
+}
+
+function renderCayUser(){
+ ctHis.innerHTML="";
+ cayThue.filter(c=>c.u==cur).forEach(c=>{
+  ctHis.innerHTML+=`
+  <div class="card">
+   ${c.note}<br>
+   Trạng thái: ${c.st}<br>
+   ${c.price?`Giá:${c.price}đ <button onclick="chapNhan(${c.id})">OK</button>`:""}
+  </div>`;
+ });
+}
+
+function chapNhan(id){
+ let c=cayThue.find(x=>x.id==id);
+ if(users[cur].b<c.price)return alert("Không đủ tiền");
+ users[cur].b-=c.price;
+ c.st="Đang cày";
+ localStorage.users=JSON.stringify(users);
+ localStorage.cayThue=JSON.stringify(cayThue);
+ updateBalance();
+}
+
+function renderAdminCay(){
+ if(!document.getElementById("adminCay"))return;
+ adminCay.innerHTML="";
+ cayThue.forEach((c,i)=>{
+  adminCay.innerHTML+=`
+  <div class="card">
+   ${c.u}<br>
+   TK:${c.acc}<br>
+   MK:${c.pass}<br>
+   ${c.note}<br>
+   <input placeholder="Giá" onchange="cayThue[${i}].price=this.value">
+   <button onclick="baoGia(${i})">Báo giá</button>
+   <button onclick="tuChoi(${i})">Từ chối</button>
+   <button onclick="hoanThanh(${i})">Hoàn thành</button>
+  </div>`;
+ });
+}
+
+function baoGia(i){cayThue[i].st="Đã báo giá";saveCay()}
+function tuChoi(i){cayThue[i].st="Từ chối";saveCay()}
+function hoanThanh(i){cayThue[i].st="Hoàn thành";saveCay()}
+function saveCay(){localStorage.cayThue=JSON.stringify(cayThue);renderAdminCay()}
 </script>
 
 </body>
