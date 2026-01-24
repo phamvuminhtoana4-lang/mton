@@ -9,6 +9,7 @@ body{margin:0;font-family:Arial;background:#020617;color:#fff}
 header{display:flex;align-items:center;padding:10px;border-bottom:1px solid #1e293b}
 #menuBtn{font-size:22px;cursor:pointer}
 #userBox{margin-left:auto;font-size:14px}
+#balanceBox{margin-left:10px;font-size:13px;color:#fde047}
 #side{position:fixed;top:0;left:-260px;width:250px;height:100%;background:#020617;border-right:1px solid #1e293b;transition:.3s;padding-top:60px;z-index:9}
 #side a{display:block;padding:12px;border-bottom:1px solid #1e293b;cursor:pointer}
 .container{padding:15px}
@@ -37,6 +38,7 @@ img{max-width:100%;border-radius:8px}
 <span id="menuBtn" onclick="toggle()">☰</span>
 <b style="margin-left:10px">SHOP ACC TOÀN</b>
 <div id="userBox">Chưa đăng nhập</div>
+<div id="balanceBox"></div>
 </header>
 
 <div id="side">
@@ -145,8 +147,7 @@ Nội dung CK:
 <div id="aiHead" onclick="toggleAI()">🤖 AI hỗ trợ</div>
 <div id="aiBody">
 <div id="chat" class="chat"></div>
-<input id="ask" placeholder="Hỏi AI..." 
-onkeydown="if(event.key==='Enter')sendAI()">
+<input id="ask" placeholder="Hỏi AI..." onkeydown="if(event.key==='Enter')sendAI()">
 <button onclick="sendAI()">Gửi</button>
 </div>
 </div>
@@ -158,6 +159,11 @@ let accs=JSON.parse(localStorage.accs||"[]");
 let naps=JSON.parse(localStorage.naps||"[]");
 let buys=JSON.parse(localStorage.buys||"[]");
 let cur=null,img="";
+
+function updateBalance(){
+ if(cur && users[cur]) balanceBox.innerText="Số dư: "+users[cur].b+"đ";
+ else balanceBox.innerText="";
+}
 
 function toggle(){side.style.left=side.style.left=="0px"?"-260px":"0px"}
 
@@ -185,6 +191,7 @@ function login(){
   cur="ADMIN";
   adminMenu.style.display="block";
   userBox.innerText="ADMIN";
+  updateBalance();
   go("admin");return;
  }
  if(!users[lUser.value]||users[lUser.value].pass!=lPass.value)
@@ -192,6 +199,7 @@ function login(){
  cur=lUser.value;
  userBox.innerText=cur+" | "+users[cur].b+"đ";
  ckNoiDung.innerText="NAP_"+cur;
+ updateBalance();
  go("nap");
 }
 
@@ -256,6 +264,7 @@ function duyetNap(i){
  users[n.u].b+=n.mg;
  localStorage.users=JSON.stringify(users);
  localStorage.naps=JSON.stringify(naps);
+ if(n.u===cur) updateBalance();
  renderAdmin();
 }
 
@@ -268,6 +277,7 @@ function adminAddMoney(){
  naps.push({u,mg:m,nd,st:"ADMIN CỘNG"});
  localStorage.users=JSON.stringify(users);
  localStorage.naps=JSON.stringify(naps);
+ if(u===cur) updateBalance();
  alert("Đã cộng tiền");
  renderAdmin();
 }
@@ -306,4 +316,4 @@ function sendAI(){
 </script>
 
 </body>
-</html>
+ </html>
