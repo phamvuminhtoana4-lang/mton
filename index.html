@@ -182,7 +182,7 @@ function go(v){
  side.style.left="-260px";
 }
 
-/* ===== ĐĂNG KÝ (CHỐNG TRÙNG) ===== */
+/* ===== ĐĂNG KÝ ===== */
 function register(){
  let u=rUser.value.trim().toLowerCase();
  if(!u||!rPass.value||!rPass2.value)return alert("Thiếu thông tin");
@@ -326,15 +326,62 @@ function copyCK(){
  alert("Đã copy nội dung CK");
 }
 
-/* ===== AI ===== */
-function toggleAI(){aiBody.style.display=aiBody.style.display=="none"?"block":"none";}
+/* ================= AI THÔNG MINH – TUÂN THỦ NỘI QUY ================= */
+
+const bannedWords=[
+ "mật khẩu","password","pass","admin","chủ shop",
+ "acc chưa bán","tk acc","database","nội bộ",
+ "hack","bypass","số dư người khác"
+];
+
+const aiAnswers={
+ greet:[
+  "Chào bạn 👋 Mình hỗ trợ nạp tiền và mua acc nhé.",
+  "Xin chào 😄 Bạn cần hỗ trợ gì về shop không?"
+ ],
+ nap:[
+  "Bạn vào mục Nạp tiền và làm theo hướng dẫn.",
+  "Sau khi nạp, admin sẽ duyệt và cộng tiền."
+ ],
+ buy:[
+  "Bạn chọn acc phù hợp rồi bấm mua nhé.",
+  "Sau khi duyệt, thông tin acc sẽ hiện trong lịch sử mua."
+ ],
+ error:[
+  "Bạn thử tải lại trang và thao tác lại nhé.",
+  "Nếu vẫn lỗi, bạn liên hệ admin để được hỗ trợ."
+ ],
+ refuse:[
+  "Xin lỗi, thông tin này mình không thể cung cấp.",
+  "Đây là thông tin nội bộ của shop."
+ ]
+};
+
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+
+function aiReply(q){
+ q=q.toLowerCase();
+
+ for(let w of bannedWords){
+  if(q.includes(w)) return rand(aiAnswers.refuse);
+ }
+
+ if(q.includes("chào")||q.includes("hi")) return rand(aiAnswers.greet);
+ if(q.includes("nạp")||q.includes("thẻ")||q.includes("chuyển")) return rand(aiAnswers.nap);
+ if(q.includes("mua")||q.includes("acc")) return rand(aiAnswers.buy);
+ if(q.includes("lỗi")||q.includes("sai")) return rand(aiAnswers.error);
+
+ return "Mình chỉ hỗ trợ các câu hỏi chung về shop nhé 🙂";
+}
+
+function toggleAI(){
+ aiBody.style.display=aiBody.style.display=="none"?"block":"none";
+}
+
 function sendAI(){
  if(!ask.value)return;
  chat.innerHTML+=`<div class="user">Bạn: ${ask.value}</div>`;
- let a="Vui lòng liên hệ admin.";
- if(ask.value.includes("nạp"))a="Vào mục nạp tiền để nạp.";
- if(ask.value.includes("mua"))a="Chọn acc → bấm mua → admin duyệt.";
- chat.innerHTML+=`<div class="ai">AI: ${a}</div>`;
+ chat.innerHTML+=`<div class="ai">AI: ${aiReply(ask.value)}</div>`;
  ask.value="";
  chat.scrollTop=9999;
 }
