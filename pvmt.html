@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>STICKMAN: TU TIÊN VÔ ĐỊCH - MOBILE</title>
+    <style>
+        :root { --gold: #ffd700; --cyan: #00ffff; --red: #ff3333; }
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; color: white; touch-action: none; }
+        canvas { display: block; }
+
+        /* Giao diện HUD */
+        #hud { position: absolute; inset: 0; pointer-events: none; display: none; }
+        #hud * { pointer-events: auto; }
+        
+        #stats { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); padding: 12px; border-radius: 10px; border-left: 4px solid var(--gold); min-width: 200px; }
+        #tu-vi { color: var(--cyan); font-weight: bold; font-size: 16px; text-shadow: 0 0 5px var(--cyan); }
+        .bar-bg { width: 100%; height: 6px; background: #333; margin-top: 8px; border-radius: 3px; overflow: hidden; }
+        #exp-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #0066ff, #00ffff); transition: 0.3s; }
+
+        /* Joystick ảo */
+        #joystick-container { position: absolute; bottom: 50px; left: 50px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); }
+        #joystick-stick { position: absolute; top: 35px; left: 35px; width: 50px; height: 50px; background: rgba(255,255,255,0.5); border-radius: 50%; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+
+        /* Các nút hành động */
+        #action-buttons { position: absolute; bottom: 30px; right: 20px; display: grid; grid-template-columns: repeat(2, 80px); gap: 12px; }
+        .btn { width: 80px; height: 80px; border-radius: 50%; background: rgba(0,0,0,0.7); border: 2px solid #fff; color: white; font-weight: bold; font-size: 11px; cursor: pointer; }
+        .btn-atk { background: radial-gradient(var(--red), #600); border-color: var(--gold); font-size: 18px; grid-row: span 2; width: 100px; height: 100px; align-self: center; }
+
+        /* Menus */
+        #panel { position: absolute; inset: 20px; background: rgba(0,0,0,0.98); border: 2px solid var(--gold); display: none; z-index: 2000; padding: 20px; overflow-y: auto; border-radius: 15px; }
+        .list-item { display: flex; justify-content: space-between; padding: 15px; border-bottom: 1px solid #333; align-items: center; }
+        .buy-btn { background: var(--gold); border: none; padding: 10px 15px; font-weight: bold; border-radius: 5px; color: #000; }
+
+        /* Màn hình đăng nhập */
+        #auth { position: absolute; inset: 0; background: radial-gradient(circle, #222, #000); z-index: 3000; display: flex; align-items: center; justify-content: center; text-align: center; }
+        input { padding: 15px; margin: 10px; width: 250px; border-radius: 8px; border: 1px solid var(--gold); background: #111; color: white; }
+        .auth-btn { padding: 12px 30px; background: var(--gold); border: none; font-weight: bold; border-radius: 8px; cursor: pointer; }
+
+        #msg-popup { position: absolute; top: 30%; left: 50%; transform: translate(-50%, -50%); font-size: 28px; font-weight: bold; pointer-events: none; text-align: center; }
+    </style>
+</head>
+<body>
+
+<div id="auth">
+    <div>
+        <h1 style="color:var(--gold); margin-bottom: 30px;">STICKMAN: CỬU THIÊN</h1>
+        <input type="text" id="u" placeholder="Tên Đạo Hữu">
+        <input type="password" id="p" placeholder="Mật Khẩu">
+        <div style="margin-top: 20px;">
+            <button class="auth-btn" onclick="game.auth('reg')">ĐĂNG KÝ</button>
+            <button class="auth-btn" style="background:#555; color:white;" onclick="game.auth('login')">ĐĂNG NHẬP</button>
+        </div>
+    </div>
+</div>
+
+<div id="hud">
+    <div id="stats">
+        <div id="tu-vi">Phàm Nhân</div>
+        <div style="font-size: 14px; margin-top: 5px;">Cấp: <span id="ui-lv" style="color:var(--gold)">1</span></div>
+        <div style="font-size: 14px;">Công: <span id="ui-atk" style="color:var(--red)">0</span></div>
+        <div style="font-size: 14px;">Vàng: <span id="ui-gold" style="color:#0f0">0</span></div>
+        <div style="font-size: 14px;">Phái: <span id="ui-sect" style="color:var(--cyan)">Vô Danh</span></div>
+        <div class="bar-bg"><div id="exp-fill"></div></div>
+    </div>
+
+    <div id="joystick-container">
+        <div id="joystick-stick"></div>
+    </div>
+
+    <div id="action-buttons">
+        <button class="btn btn-atk" onclick="game.attack()">CHÉM</button>
+        <button class="btn" onclick="game.togglePanel('shop')">TIỆM KIẾM</button>
+        <button class="btn" onclick="game.togglePanel('sect')">TÔNG MÔN</button>
+        <button class="btn" style="grid-column: span 2; height: 40px; border-radius: 10px;" onclick="alert('Kỹ năng sẽ mở khóa tại cấp 30!')">TUYỆT KỸ</button>
+    </div>
+    
+    <div id="msg-popup"></div>
+</div>
+
+<div id="panel">
+    <h2 id="p-title" style="color:var(--gold); border-bottom: 2px solid var(--gold); padding-bottom: 10px;"></h2>
+    <div id="p-content"></div>
+    <button onclick="game.togglePanel()" style="width:100%; padding:15px; background:var(--red); color:#fff; border:none; margin-top:20px; font-weight:bold; border-radius: 10px;">THOÁT</button>
+</div>
+
+<canvas id="c"></canvas>
+
+<script>
+const canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+
+const game = {
+    // Thuộc tính nhân vật
+    p: { u:"", x:0, y:0, lv:1, exp:0, gold:1000000, atkBase:20, wDmg:0, weapon:"Tay không", sect:"Vô Danh", dir:1, isMove:false, inBoss:false, moveSpeed:0 },
+    npcs: [], effs: [], dmgs: [],
+    
+    // Joystick data
+    joy: { active: false, startX: 0, startY: 0, currX: 0, currY: 0, maxDist: 45 },
+
+    // Cảnh giới
+    ranks: [[150,"VÔ ĐỊCH THIÊN HẠ"],[100,"ĐẠI TÔNG SƯ"],[90,"TÔNG SƯ C3"],[80,"TÔNG SƯ C2"],[70,"TÔNG SƯ"],[60,"BÁN TÔNG SƯ"],[50,"TU TIÊN C3"],[40,"TU TIÊN C2"],[30,"TU TIÊN CB"],[20,"THỨC TỈNH"],[0,"PHÀM NHÂN"]],
+
+    // 15 Vũ khí
+    weapons: [
+        {n:"Kiếm Gỗ", p:100000, a:150, c:"#8b4513"}, {n:"Trúc Kiếm", p:300000, a:400, c:"#4caf50"}, {n:"Sắt Kiếm", p:800000, a:1200, c:"#777"},
+        {n:"Đồng Kiếm", p:1500000, a:3500, c:"#cd7f32"}, {n:"Bạc Kiếm", p:4000000, a:10000, c:"#eee"}, {n:"Vàng Kiếm", p:10000000, a:30000, c:"#ffd700"},
+        {n:"Linh Vũ", p:25000000, a:80000, c:"#00ffff"}, {n:"Hỏa Vân", p:60000000, a:200000, c:"#ff4400"}, {n:"Băng Phách", p:150000000, a:500000, c:"#aaddff"},
+        {n:"U Minh", p:400000000, a:1500000, c:"#4400aa"}, {n:"Tinh Thần", p:1000000000, a:5000000, c:"#1122ff"}, {n:"Huyền Thiết", p:3000000000, a:20000000, c:"#222"},
+        {n:"Thần Hi", p:10000000000, a:80000000, c:"#fff"}, {n:"Ma Diệt", p:50000000000, a:300000000, c:"#ff0055"}, {n:"VÔ ĐỊCH KIẾM", p:99999999999, a:999999999, c:"#gold"}
+    ],
+
+    // Tông môn
+    sects: [{n:"Thiếu Lâm", l:0}, {n:"Võ Đang", l:0}, {n:"Nga Mi", l:0}, {n:"Cái Bang", l:0}, {n:"Đường Môn", l:0}, {n:"Ma Giáo", l:50}, {n:"Tiên Kiếm", l:60}, {n:"Vô Địch", l:100}],
+
+    auth: function(t) {
+        const u = document.getElementById('u').value, p = document.getElementById('p').value;
+        if(t==='reg') {
+            localStorage.setItem('ST_'+u, JSON.stringify({u,p,lv:1,gold:1000000,exp:0,wDmg:0,weapon:"Tay không",sect:"Vô Danh"}));
+            alert("Ghi danh thành công!");
+        } else {
+            const d = JSON.parse(localStorage.getItem('ST_'+u));
+            if(d && d.p===p) { 
+                Object.assign(this.p, d); 
+                document.getElementById('auth').style.display='none'; 
+                document.getElementById('hud').style.display='block'; 
+                this.init(); 
+            } else alert("Tài khoản không đúng!");
+        }
+    },
+
+    init: function() {
+        this.p.y = canvas.height-100;
+        this.setupJoystick();
+        this.updateStats();
+        setInterval(() => {
+            if(this.npcs.length < 5 && !this.p.inBoss) {
+                this.npcs.push({x:this.p.x+(Math.random()>0.5?700:-700), y:canvas.height-100, hp:500*this.p.lv, max:500*this.p.lv, isBoss:false});
+            }
+        }, 2000);
+        this.loop();
+    },
+
+    setupJoystick: function() {
+        const container = document.getElementById('joystick-container');
+        const stick = document.getElementById('joystick-stick');
+        
+        const handleTouch = (e) => {
+            const touch = e.touches[0];
+            const rect = container.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            let dx = touch.clientX - centerX;
+            let dy = touch.clientY - centerY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            
+            if(dist > this.joy.maxDist) {
+                dx *= this.joy.maxDist / dist;
+                dy *= this.joy.maxDist / dist;
+            }
+            
+            stick.style.transform = `translate(${dx}px, ${dy}px)`;
+            this.p.moveSpeed = dx / 5; // Tốc độ dựa trên độ kéo
+            if(dx > 5) this.p.dir = 1;
+            if(dx < -5) this.p.dir = -1;
+            this.p.isMove = Math.abs(dx) > 2;
+        };
+
+        container.addEventListener('touchstart', (e) => { e.preventDefault(); handleTouch(e); });
+        container.addEventListener('touchmove', (e) => { e.preventDefault(); handleTouch(e); });
+        container.addEventListener('touchend', () => {
+            stick.style.transform = `translate(0px, 0px)`;
+            this.p.moveSpeed = 0;
+            this.p.isMove = false;
+        });
+    },
+
+    updateStats: function() {
+        const r = this.ranks.find(x => this.p.lv >= x[0]);
+        document.getElementById('tu-vi').innerText = r[1];
+        document.getElementById('ui-lv').innerText = this.p.lv;
+        document.getElementById('ui-gold').innerText = this.p.gold.toLocaleString();
+        document.getElementById('ui-sect').innerText = this.p.sect;
+        const total = (this.p.atkBase + (this.p.lv * 40)) + this.p.wDmg;
+        document.getElementById('ui-atk').innerText = total.toLocaleString();
+        return total;
+    },
+
+    attack: function() {
+        this.effs.push({x:canvas.width/2 + (60*this.p.dir), y:this.p.y-40, l:10, d:this.p.dir});
+        const dmg = this.updateStats();
+        this.npcs.forEach((n, i) => {
+            if(Math.abs(this.p.x + (this.p.dir*60) - n.x) < 100) {
+                const crit = Math.random()>0.8?2.5:1;
+                const final = Math.floor(dmg * crit);
+                n.hp -= final;
+                this.dmgs.push({x:canvas.width/2+(n.x-this.p.x), y:n.y-100, t:final, l:30, c:crit>1?'#ff0':'#fff'});
+                if(n.hp<=0) {
+                    this.p.gold += n.isBoss ? 5000000 : 100000;
+                    this.p.exp += n.isBoss ? 1500 : 80;
+                    this.npcs.splice(i,1);
+                    if(n.isBoss) { this.p.inBoss = false; this.showPopup("ĐỘT PHÁ THÀNH CÔNG!", "var(--cyan)"); }
+                    this.checkExp();
+                }
+            }
+        });
+    },
+
+    checkExp: function() {
+        const req = this.p.lv * 400;
+        if(this.p.exp >= req) {
+            if(this.p.lv % 10 === 0 && !this.p.inBoss) {
+                this.p.inBoss = true;
+                this.npcs = [{x:this.p.x+500, y:canvas.height-100, hp:8000*this.p.lv, max:8000*this.p.lv, isBoss:true}];
+                this.showPopup("BOSS CẢNH GIỚI XUẤT HIỆN!", "red");
+            } else {
+                this.p.lv++; this.p.exp = 0;
+                this.updateStats();
+                this.showPopup("THĂNG CẤP!", "var(--gold)");
+            }
+        }
+        document.getElementById('exp-fill').style.width = (this.p.exp/req*100)+'%';
+    },
+
+    togglePanel: function(type) {
+        const p = document.getElementById('panel'), c = document.getElementById('p-content'), t = document.getElementById('p-title');
+        if(!type) { p.style.display='none'; return; }
+        p.style.display='block'; c.innerHTML = "";
+        if(type==='shop') {
+            t.innerText = "THẦN BINH CÁC (15 KIẾM)";
+            this.weapons.forEach(w => {
+                c.innerHTML += `<div class="list-item">
+                    <span><b>${w.n}</b><br><small style="color:var(--cyan)">Dame +${w.a.toLocaleString()}</small></span>
+                    <button class="buy-btn" onclick="game.buy('${w.n}',${w.p},${w.a})">${w.p.toLocaleString()}</button>
+                </div>`;
+            });
+        } else {
+            t.innerText = "GIA NHẬP TÔNG MÔN";
+            this.sects.forEach(s => {
+                c.innerHTML += `<div class="list-item">
+                    <span>Phái ${s.n} (Yêu cầu Lv: ${s.l})</span>
+                    <button class="buy-btn" onclick="game.join('${s.n}',${s.l})">GIA NHẬP</button>
+                </div>`;
+            });
+        }
+    },
+
+    buy: function(n,p,a) {
+        if(this.p.gold>=p) { this.p.gold-=p; this.p.wDmg=a; this.p.weapon=n; this.updateStats(); this.showPopup("Đã mua "+n, "#fff"); }
+        else alert("Thiếu Linh Thạch!");
+    },
+
+    join: function(n,l) {
+        if(this.p.lv>=l) { this.p.sect=n; this.updateStats(); alert("Gia nhập thành công phái "+n); }
+        else alert("Cấp chưa đủ!");
+    },
+
+    showPopup: function(t, c) {
+        const o = document.getElementById('msg-popup');
+        o.innerText = t; o.style.color = c;
+        setTimeout(()=>o.innerText="", 2000);
+    },
+
+    drawStick: function(x, y, d, isNpc, hpR, isBoss) {
+        ctx.strokeStyle = isBoss?"#ff0":(isNpc?"#f00":"#fff"); ctx.lineWidth = isBoss?6:3;
+        let walk = (this.p.isMove || isNpc) ? Math.sin(Date.now()*0.015)*12 : 0;
+        if(isNpc) { ctx.fillStyle="#333"; ctx.fillRect(x-30, y-90, 60, 5); ctx.fillStyle=isBoss?"#ff0":"#f00"; ctx.fillRect(x-30, y-90, 60*hpR, 5); }
+        const size = isBoss?22:11;
+        ctx.beginPath(); ctx.arc(x, y-60, size, 0, 7); ctx.stroke(); // Đầu
+        ctx.beginPath(); ctx.moveTo(x, y-50); ctx.lineTo(x, y-20); ctx.stroke(); // Thân
+        ctx.beginPath(); ctx.moveTo(x, y-20); ctx.lineTo(x-12+walk, y); ctx.stroke(); // Chân
+        ctx.beginPath(); ctx.moveTo(x, y-20); ctx.lineTo(x+12-walk, y); ctx.stroke();
+        
+        let col = "#0ff";
+        if(!isNpc) { const w = this.weapons.find(x=>x.n===this.p.weapon); if(w) col = w.c; }
+        ctx.strokeStyle = col; ctx.lineWidth = isBoss?7:4;
+        ctx.beginPath(); ctx.moveTo(x, y-40); ctx.lineTo(x+55*d, y-55+walk); ctx.stroke();
+    },
+
+    loop: function() {
+        ctx.fillStyle="#080808"; ctx.fillRect(0,0,canvas.width,canvas.height);
+        this.p.x += this.p.moveSpeed; // Di chuyển dựa trên Joystick
+        
+        ctx.fillStyle="#151515"; ctx.fillRect(0, canvas.height-50, canvas.width, 50);
+
+        this.npcs.forEach(n => {
+            let sx = canvas.width/2 + (n.x - this.p.x);
+            this.drawStick(sx, n.y, n.x > this.p.x ? -1 : 1, true, n.hp/n.max, n.isBoss);
+            n.x += (this.p.x > n.x ? 2.5 : -2.5);
+        });
+
+        this.effs.forEach((e, i) => {
+            ctx.strokeStyle=`rgba(255,255,255,${e.l/10})`; ctx.beginPath(); ctx.arc(e.x, e.y, 50, -0.7, 0.7); ctx.stroke();
+            if(e.l-- <= 0) this.effs.splice(i,1);
+        });
+
+        this.dmgs.forEach((d, i) => {
+            ctx.fillStyle=d.c; ctx.font="bold 20px Arial"; ctx.fillText("-"+d.t.toLocaleString(), d.x, d.y--);
+            if(d.l-- <= 0) this.dmgs.splice(i,1);
+        });
+
+        this.drawStick(canvas.width/2, this.p.y, this.p.dir, false);
+        requestAnimationFrame(() => this.loop());
+    }
+};
+</script>
+</body>
+</html>
